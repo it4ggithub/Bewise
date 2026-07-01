@@ -1,0 +1,57 @@
+{
+  "id": "d81ec40b-1d63-4f94-9756-f82eca19ffc2",
+  "name": "BW_BSB",
+  "publisher": "BW_LA",
+  "version": "1.0.0.0",
+  "brief": "",
+  "description": "",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [
+    {
+      "id": "860129d2-5bb6-4698-b9a9-4e7e406baabb",
+      "name": "Greek Translation for Dynamics 365 Business Central",
+      "publisher": "Real Consulting SA",
+      "version": "26.2504.23.0"
+    },
+    {
+      "id": "860129d2-5bb6-4698-b9a9-66430dbeabab",
+      "name": "Greek Localization for Dynamics 365 Business Central mydata",
+      "publisher": "Real Consulting SA",
+      "version": "26.2506.25110.0"    
+    },
+    {
+      "id": "1b8c4264-dbf7-47a3-b6af-42c114853025",
+      "name": "Greek Localization for Business Central Premium",
+      "publisher": "Real Consulting SA",
+      "version": "26.2504.21.0"    
+    },
+    {
+      "id": "860129d2-5bb6-4698-b9a9-4e7e406b284a",
+      "name": "Greek Localization for Business Central Essentials",
+      "publisher": "Real Consulting SA",
+      "version": "26.2508.8.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "1.0.0.0",
+  "application": "25.0.0.0",
+  "idRanges": [
+    {
+      "from": 67100,
+      "to": 67149
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "runtime": "15.0",
+  "features": [
+    "NoImplicitWith"
+  ]
+}
