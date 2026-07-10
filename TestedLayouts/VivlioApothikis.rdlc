@@ -10522,6 +10522,7 @@
                       <Group Name="ItemNo">
                         <GroupExpressions>
                           <GroupExpression>=Fields!No_.Value</GroupExpression>
+                          <GroupExpression>=Fields!LocationCode.Value</GroupExpression>
                         </GroupExpressions>
                       </Group>
                       <SortExpressions>
@@ -10546,6 +10547,29 @@
                           <KeepWithGroup>Before</KeepWithGroup>
                         </TablixMember>
                         <TablixMember>
+                          <Visibility>
+                            <Hidden>=IIF(
+  Abs(IIF(IsNothing(Sum(Fields!Quantity_from_transfer.Value, "ItemNo")),0,Sum(Fields!Quantity_from_transfer.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Amount_from_transfer.Value, "ItemNo")),0,Sum(Fields!Amount_from_transfer.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Quantity_from_purch.Value, "ItemNo")),0,Sum(Fields!Quantity_from_purch.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Amount_from_purch.Value, "ItemNo")),0,Sum(Fields!Amount_from_purch.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Quantity_from_cons.Value, "ItemNo")),0,Sum(Fields!Quantity_from_cons.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Amount_from_cons.Value, "ItemNo")),0,Sum(Fields!Amount_from_cons.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Quantity_from_prod.Value, "ItemNo")),0,Sum(Fields!Quantity_from_prod.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Amount_from_prod.Value, "ItemNo")),0,Sum(Fields!Amount_from_prod.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Quantity_from_sale.Value, "ItemNo")),0,Sum(Fields!Quantity_from_sale.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Amount_from_sale.Value, "ItemNo")),0,Sum(Fields!Amount_from_sale.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Cost_from_sale.Value, "ItemNo")),0,Sum(Fields!Cost_from_sale.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Quantity_from_self.Value, "ItemNo")),0,Sum(Fields!Quantity_from_self.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Amount_from_self.Value, "ItemNo")),0,Sum(Fields!Amount_from_self.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Quantity_from_other_pos.Value, "ItemNo")),0,Sum(Fields!Quantity_from_other_pos.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Amount_from_other_pos.Value, "ItemNo")),0,Sum(Fields!Amount_from_other_pos.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Quantity_from_other_neg.Value, "ItemNo")),0,Sum(Fields!Quantity_from_other_neg.Value, "ItemNo"))) +
+  Abs(IIF(IsNothing(Sum(Fields!Amount_from_other_neg.Value, "ItemNo")),0,Sum(Fields!Amount_from_other_neg.Value, "ItemNo"))) = 0,
+  True,
+  False
+)</Hidden>
+                          </Visibility>
                           <KeepWithGroup>Before</KeepWithGroup>
                         </TablixMember>
                       </TablixMembers>

@@ -34,6 +34,18 @@
       "name": "Greek Localization for Business Central Essentials",
       "publisher": "Real Consulting SA",
       "version": "26.2508.8.0"
+    },
+    {
+      "id": "dfd9311a-2fb8-42f4-8298-5360502e8a38",
+      "name": "BSBCustom",
+      "version": "26.5.2.44",
+      "publisher": "Ergologic"
+    },
+    {
+      "id": "3f0ef733-6e52-428f-9d92-dbed73e1c500",
+      "name": "Reports",
+      "version": "26.1.31.4",
+      "publisher": "Ergologic"
     }
   ],
   "screenshots": [],

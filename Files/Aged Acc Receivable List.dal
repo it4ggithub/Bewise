@@ -1,0 +1,597 @@
+// //ERGRET - Dmitr - Creation - 24.09.2024
+// //ERGRET.002 - 02.04.2025 - dionysisp - replaced "Payment Terms Code" with "Extended Payments"
+// page 50455 "Aged Accounts Receivable List"
+// {
+//     ApplicationArea = All;
+//     Caption = 'Aged Accounts Receivable List';
+//     PageType = List;
+//     SourceTable = "Sort Table RCGRBASE";
+//     SourceTableTemporary = true;
+//     UsageCategory = Lists;
+//     Editable = true;
+
+//     layout
+//     {
+//         area(Content)
+//         {
+//             group(Options)
+//             {
+//                 field(DateTo; DateTo)
+//                 {
+//                     Caption = 'Date To';
+//                 }
+//                 field(CustomerFilter2; CustomerFilter)
+//                 {
+//                     Caption = 'Customer Filter'; //Φίλτρο Πελάτη
+//                     ApplicationArea = All;
+//                     Editable = true;
+//                     trigger OnLookup(var Text: Text): Boolean
+//                     var
+//                         CustList: Page "Customer List";
+//                     begin
+//                         Clear(CustomerFilter);
+//                         CustList.LookupMode(true);
+//                         if CustList.RunModal() = Action::LookupOK then begin
+//                             Text += CustList.GetSelectionFilter();
+//                             CustomerFilter += CustList.GetSelectionFilter();
+//                             exit(true);
+//                         end else
+//                             exit(false);
+//                     end;
+
+
+//                 }
+//             }
+//             repeater(Group)
+//             {
+//                 field(EntryNo; Rec.EntryNo)
+//                 {
+//                     Caption = 'Entry No.';
+//                     ApplicationArea = All;
+//                     Editable = false;
+//                     Visible = False;
+//                 }
+//                 field(ShipToCode; Rec.Sortkey1)
+//                 {
+//                     Caption = 'ΚΩΔΙΚΟΣ';
+//                     ApplicationArea = All;
+//                     Editable = false;
+//                     TableRelation = "Ship-to Address".Code;
+//                 }
+//                 field(Name; Rec.Text4)
+//                 {
+//                     Caption = 'ΕΠΩΝΥΜΙΑ';
+//                     ApplicationArea = All;
+//                     Editable = false;
+//                     //TableRelation = Customer."No.";
+//                 }
+//                 field(code26; Rec.code26)
+//                 {
+//                     Caption = 'ΑΡ. ΠΕΛΆΤΗ';
+//                     ApplicationArea = All;
+//                     Editable = false;
+//                     Visible = true;
+//                 }
+//                 field(VAT; Rec.code22)
+//                 {
+//                     Caption = 'ΑΦΜ';
+//                     ApplicationArea = All;
+//                 }
+//                 field(PaymentTerms; Rec.code10)
+//                 {
+//                     Caption = 'ΌΡΟΙ ΠΛΗΡΩΜΉΣ';
+//                     ApplicationArea = All;
+//                     TableRelation = "Payment Terms".Code;
+//                 }
+//                 field(PaymentMethod; Rec.Text10)
+//                 {
+//                     Caption = 'ΜΈΘΟΔΟΙ ΠΛΗΡΩΜΉΣ';
+//                     ApplicationArea = All;
+//                 }
+//                 field(EULER; Rec.Bool1)
+//                 {
+//                     Caption = 'ΑΣΦ/ΝΟΣ EULER';
+//                     ApplicationArea = All;
+//                     Visible = false;
+//                 }
+//                 field(FIDANCIA; Rec.Bool2)
+//                 {
+//                     Caption = 'ΑΣΦ/ΝΟΣ FIDANCIA';
+//                     ApplicationArea = All;
+//                     Visible = false;
+//                 }
+//                 field("Insurance Limit"; Rec.Dec23)
+//                 {
+//                     ApplicationArea = All;
+//                     Caption = 'ΕΓΚΕΚΡΙΜΕΝΟ ΌΡΙΟ ΑΣΦΆΛΙΣΗΣ';
+//                 }
+//                 field(CoverPercent; Rec.code11)
+//                 {
+//                     ApplicationArea = All;
+//                     Caption = 'ΠΟΣΟΣΤΌ ΚΆΛΥΨΗΣ';
+//                 }
+//                 field(LastInvoice; Rec.Date3)
+//                 {
+//                     Caption = 'ΤΕΛΕΥΤΑΙΟ ΤΙΜΟΛΟΓΙΟ';
+//                     ApplicationArea = All;
+//                 }
+//                 field(LastPayment; Rec.Date4)
+//                 {
+//                     Caption = 'ΤΕΛΕΥΤΑΙΑ ΠΛΗΡΩΜΗ';
+//                     ApplicationArea = All;
+//                 }
+//                 field(InvoiceValue; Rec.Dec01)
+//                 {
+//                     Caption = 'ΑΞΙΑ ΤΙΜΟΛΟΓΙΩΝ';
+//                     ApplicationArea = All;
+//                     trigger OnDrillDown()
+//                     var
+//                         CE: Record "Cust. Ledger Entry";
+//                     begin
+//                         CE.RESET();
+//                         CE.SetFilter("Document Date", '..%1', DateTo);
+//                         CE.SetRange("Ship-to Code", Rec.Sortkey1);
+//                         CE.SetRange("Customer No.", Rec.code26);
+//                         CE.SetRange("Document Type", CE."Document Type"::Invoice);
+//                         PAGE.RUNMODAL(25, CE);
+//                     end;
+//                 }
+//                 field(CreditValue; Rec.Dec02)
+//                 {
+//                     Caption = 'ΑΞΙΑ ΠΙΣΤΩΤΙΚΩΝ';
+//                     ApplicationArea = All;
+//                     trigger OnDrillDown()
+//                     var
+//                         CE: Record "Cust. Ledger Entry";
+//                     begin
+//                         CE.RESET();
+//                         CE.SetFilter("Document Date", '..%1', DateTo);
+//                         CE.SetRange("Ship-to Code", Rec.Sortkey1);
+//                         CE.SetRange("Customer No.", Rec.code26);
+//                         CE.SetRange("Document Type", CE."Document Type"::"Credit Memo");
+//                         PAGE.RUNMODAL(25, CE);
+//                     end;
+//                 }
+//                 field(Payments; Rec.Dec28)
+//                 {
+//                     Caption = 'ΠΛΗΡΩΜΈΣ';
+//                     ApplicationArea = All;
+//                     trigger OnDrillDown()
+//                     var
+//                         CE: Record "Cust. Ledger Entry";
+//                     begin
+//                         CE.RESET();
+//                         CE.SetFilter("Document Date", '..%1', DateTo);
+//                         CE.SetRange("Ship-to Code", Rec.Sortkey1);
+//                         CE.SetRange("Customer No.", Rec.code26);
+//                         CE.SetFilter("Document Type", '%1|%2', CE."Document Type"::Payment, CE."Document Type"::Refund);
+//                         PAGE.RUNMODAL(25, CE);
+//                     end;
+//                 }
+//                 field(RelatedValue; Rec.Dec03)
+//                 {
+//                     Caption = 'ΑΞΙΑ ΠΡΟΣ ΣΥΣΧΕΤΙΣΗ';
+//                     ApplicationArea = All;
+//                     trigger OnDrillDown()
+//                     var
+//                         CE: Record "Cust. Ledger Entry";
+//                     begin
+//                         CE.Reset();
+//                         CE.SetFilter("Document Date", '..%1', DateTo);
+//                         CE.SetRange("Ship-to Code", Rec.Sortkey1);
+//                         CE.SetRange("Customer No.", Rec.code26);
+//                         CE.SetRange(Open, true);
+//                         PAGE.RUNMODAL(25, CE);
+//                     end;
+//                 }
+//                 field(Balance; Rec.Dec04)
+//                 {
+//                     Caption = 'ΥΠΟΛΟΙΠΟ';
+//                     ApplicationArea = All;
+//                     trigger OnDrillDown()
+//                     var
+//                         CE: Record "Cust. Ledger Entry";
+//                     begin
+//                         CE.Reset();
+//                         CE.SetFilter("Document Date", '..%1', DateTo);
+//                         CE.SetRange("Ship-to Code", Rec.Sortkey1);
+//                         CE.SetRange("Customer No.", Rec.code26);
+//                         PAGE.RUNMODAL(25, CE);
+//                     end;
+//                 }
+//                 field(OpenCheques; Rec.Dec05)
+//                 {
+//                     Caption = 'ΑΝΟΙΧΤΕΣ ΕΠΙΤΑΓΕΣ-ΓΡΑΜ';
+//                     ApplicationArea = All;
+
+//                     trigger OnDrillDown()
+//                     var
+//                         CE: Record "Cust. Ledger Entry";
+//                     begin
+//                         CE.Reset();
+//                         CE.SetFilter("Document Date", '..%1', DateTo);
+//                         CE.SetRange("Ship-to Code", Rec.Sortkey1);
+//                         CE.SetRange("Customer No.", Rec.code26);
+//                         CE.SetFilter("Document Type", '%1|%2', CE."Document Type"::Payment, CE."Document Type"::Refund);
+//                         CE.SetRange(Open, true);
+//                         PAGE.RUNMODAL(25, CE);
+//                     end;
+//                 }
+//                 field("90Days"; Rec.Dec06)
+//                 {
+//                     Caption = 'ΕΩΣ 90 ΗΜΕΡΕΣ';
+//                     ApplicationArea = All;
+//                 }
+//                 field("91-180"; Rec.Dec07)
+//                 {
+//                     Caption = '91-180';
+//                     ApplicationArea = All;
+//                 }
+//                 field("181-270"; Rec.Dec08)
+//                 {
+//                     Caption = '181-270';
+//                     ApplicationArea = All;
+//                 }
+//                 field("271-360"; Rec.Dec09)
+//                 {
+//                     Caption = '271-360';
+//                     ApplicationArea = All;
+//                 }
+//                 field("361-450"; Rec.Dec10)
+//                 {
+//                     Caption = '361-450';
+//                     ApplicationArea = All;
+//                 }
+//                 field("450AndMore"; Rec.Dec11)
+//                 {
+//                     Caption = 'ΠΑΝΩ ΑΠΟ 450';
+//                     ApplicationArea = All;
+//                 }
+//                 field(TotalDays; Rec.Dec12)
+//                 {
+//                     Caption = 'ΣΥΝΟΛΟ ΗΜΕΡΩΝ';
+//                     ApplicationArea = All;
+//                 }
+//                 field(OpenPayments; Rec.Dec13)
+//                 {
+//                     Caption = 'ΑΝΟΙΧΤΕΣ ΠΛΗΡΩΜΕΣ - ΠΙΣΤΩΤΙΚΑ';
+//                     ApplicationArea = All;
+//                 }
+//                 field(Total; Rec.Dec14)
+//                 {
+//                     Caption = 'ΣΥΝΟΛΟ';
+//                     ApplicationArea = All;
+//                 }
+//             }
+//         }
+//     }
+
+//     actions
+//     {
+//         area(Processing)
+//         {
+//             action(GenData)
+//             {
+//                 ApplicationArea = All;
+//                 Caption = 'Get Details';
+//                 Promoted = true;
+//                 PromotedIsBig = true;
+//                 PromotedOnly = true;
+//                 PromotedCategory = Process;
+//                 trigger OnAction();
+//                 begin
+//                     If DateTo <> 0D then begin
+//                         GetDetails();
+//                     end else begin
+//                         Error(Text001);
+//                     end;
+//                 end;
+//             }
+//         }
+//     }
+
+//     var
+//         Customer: Record Customer;
+//         DateTo: Date;
+//         Text001: Label 'Δώστε ημερομηνία';
+
+//         CustomerFilter: Text;
+
+//     local procedure GetDetails()
+//     var
+
+//         CustLedgerEntry: Record "Cust. Ledger Entry";
+//         CustLEntry: Record "Cust. Ledger Entry";
+//         DetLedgerEntry: Record "Detailed Cust. Ledg. Entry";
+//         ShipToCode: Code[10];
+//         CustomerName: Text[100];
+//         CustomerNo: Code[20];
+//         InvoiceAmount: Decimal;
+//         Amount: Decimal;
+//         PaymentAmount: Decimal;
+//         RelatedAmount: Decimal;
+
+//         PaymentTerms: Record "Payment Terms";
+//         CustomerInfo: Dictionary of [Text, Code[10]];
+//         ShipTo: Record "Ship-to Address";
+//         VAT: Text[20];
+
+//         PayTermsCode: Code[10];
+//         PayDescription: Text[100];
+
+//         MaxDateInv: Date;
+//         MaxDatePay: Date;
+
+//         CustLEntry1: Record "Cust. Ledger Entry";
+
+//         Amount0To90: Decimal;
+//         Amount91To180: Decimal;
+//         Amount181To270: Decimal;
+//         Amount271To360: Decimal;
+//         Amount361To450: Decimal;
+//         Amount450Plus: Decimal;
+//         OpenChequesAm: Decimal;
+//         CreditAmount: Decimal;
+
+//         TotalDays: Decimal;
+
+//         OfficialCreditLimit: Decimal;
+//         CPHelpTabRec: Record "CP Help Table";
+//         InsuranceCat: Code[20];
+//         CustCountry: Code[10];
+//         CoverPercentage: code[10];
+
+//     begin
+//         Rec.DeleteAll();
+//         CustLedgerEntry.Reset();
+
+//         CustLedgerEntry.SetFilter("Posting Date", '..%1', DateTo);
+//         CustLedgerEntry.SetFilter("Customer No.", CustomerFilter);
+//         If CustLedgerEntry.FindSet() then begin
+//             repeat
+//                 Clear(CustomerName);
+//                 Clear(CustomerNo);
+//                 Clear(ShipToCode);
+//                 Clear(VAT);
+//                 Clear(PaymentTerms);
+//                 Clear(PayDescription);
+//                 Clear(CoverPercentage);
+//                 Clear(CustCountry);
+//                 Clear(InsuranceCat);
+
+//                 CustomerNo := CustLedgerEntry."Customer No.";
+//                 ShipToCode := CustLedgerEntry."Ship-to Code";
+
+//                 If Customer.Get(CustLedgerEntry."Customer No.") then begin
+//                     CustomerName := Customer.Name;
+//                     OfficialCreditLimit := Customer."Official Credit Limit";
+//                     InsuranceCat := Customer."Insurance Category";
+//                     CustCountry := Customer."Country/Region Code";
+
+//                     If InsuranceCat = '07' then begin
+//                         CoverPercentage := '90' + '%';
+//                     end;
+
+//                     If (InsuranceCat = '08') And (CustCountry = 'GR') then begin
+//                         CoverPercentage := '90' + '%';
+//                     end else if (InsuranceCat = '08') And (CustCountry = 'CYP') then begin
+//                         CoverPercentage := '90' + '%';
+//                     end else if InsuranceCat = '08' then
+//                             CoverPercentage := '85' + '%';
+//                 end;
+
+//                 if ShipTo.Get(CustomerNo, ShipToCode) then begin
+//                     VAT := ShipTo."VAT Registration No. RCGRBASE";
+//                     PayTermsCode := ShipTo."Extended Payments"; //ShipTo."Payment Terms Code"; //ERGRET.002
+
+//                     if PaymentTerms.Get(PayTermsCode) then begin
+//                         PayDescription := PaymentTerms.Description;
+//                     end;
+//                 end;
+
+//                 //Ελεγχος αν εχει γινει ηδη insert και υπολογισμος για το συγκεκριμενο Customer Name και ShipTo
+//                 if not CustomerInfo.Get(CustomerName, ShipToCode) then begin
+//                     Clear(PaymentAmount);
+//                     Clear(Amount);
+//                     Clear(InvoiceAmount);
+//                     Clear(MaxDateInv);
+//                     Clear(MaxDatePay);
+//                     Clear(Amount0To90);
+//                     Clear(Amount181To270);
+//                     Clear(Amount271To360);
+//                     Clear(Amount361To450);
+//                     Clear(Amount91To180);
+//                     Clear(Amount450Plus);
+//                     Clear(CreditAmount);
+//                     Clear(OpenChequesAm);
+//                     Clear(RelatedAmount);
+//                     Clear(TotalDays);
+
+//                     CustomerInfo.Add(CustomerName, ShipToCode);
+
+//                     CustLEntry.Reset();
+//                     CustLEntry.SetLoadFields("Ship-to Code", "Customer Name", "Customer No.", "Posting Date", "Document Type", Amount, "Remaining Amount", Open);
+//                     CustLEntry.SetFilter("Document Date", '..%1', DateTo);
+//                     CustLEntry.SetRange("Ship-to Code", CustLedgerEntry."Ship-to Code");
+//                     CustLEntry.SetRange("Customer No.", CustLedgerEntry."Customer No.");
+//                     //CustLEntry.SetRange("Customer Name", CustLedgerEntry."Customer Name");
+//                     if CustLEntry.FindSet() then begin
+//                         repeat
+//                             //Rec.Dec04 += CustLEntry.Amount;
+//                             CustLEntry.CalcFields(Amount);
+//                             Amount += CustLEntry.Amount;
+//                         until CustLEntry.Next() = 0;
+//                     end;
+
+//                     CustLEntry.SetRange("Document Type", CustLEntry."Document Type"::Invoice);
+//                     if CustLEntry.FindSet() then begin
+//                         repeat
+//                             //ΑΞΙΑ ΤΙΜΟΛΟΓΙΩΝ
+//                             //Rec.Dec01 += CustLEntry.Amount;
+//                             CustLEntry.CalcFields(Amount);
+//                             InvoiceAmount += CustLEntry.Amount;
+
+//                             if MaxDateInv <= CustLEntry."Document Date" then
+//                                 MaxDateInv := CustLEntry."Document Date";
+//                         until CustLEntry.Next() = 0;
+//                     end;
+
+
+//                     CustLEntry.SetRange("Document Type", CustLEntry."Document Type"::"Credit Memo");
+//                     if CustLEntry.FindSet() then begin
+//                         repeat
+//                             //ΑΞΙΑ ΠΙΣΤΩΤΙΚΩΝ
+//                             CustLEntry.CalcFields(Amount);
+//                             CreditAmount += CustLEntry.Amount;
+
+//                         until CustLEntry.Next() = 0;
+//                     end;
+
+//                     CustLEntry.SetFilter("Document Type", '%1|%2|%3', CustLEntry."Document Type"::Payment, CustLEntry."Document Type"::Refund, CustLEntry."Document Type"::" ");
+//                     if CustLEntry.FindSet() then begin
+//                         repeat
+//                             //ΠΛΗΡΩΜΕΣ
+//                             //Rec.DEC28
+//                             CustLEntry.CalcFields("Amount");
+//                             PaymentAmount += CustLEntry."Amount";
+
+//                             if MaxDatePay <= CustLEntry."Document Date" then
+//                                 MaxDatePay := CustLEntry."Document Date";
+//                         until CustLEntry.Next() = 0;
+//                     end;
+
+//                     CustLEntry.SetFilter("Document Type", '%1|%2', CustLEntry."Document Type"::Payment, CustLEntry."Document Type"::Refund);
+//                     CustLEntry.SetRange(Open, true);
+//                     if CustLEntry.FindSet() then begin
+//                         repeat
+//                             //Ανοιχτες επιταγές
+//                             DetLedgerEntry.Reset();// Παιρνω το Amount απο τον Detailed Cust. Ledg. Entry
+//                             DetLedgerEntry.SetRange("Cust. Ledger Entry No.", CustLEntry."Entry No.");
+//                             if DetLedgerEntry.FindSet() then begin
+//                                 repeat
+//                                     //DetLedgerEntry.CalcFields(Amount);
+//                                     OpenChequesAm += DetLedgerEntry."Amount";
+//                                 until DetLedgerEntry.Next() = 0;
+//                             end;
+//                         until CustLEntry.Next() = 0;
+//                     end;
+
+//                     CustLEntry.Reset();
+//                     CustLEntry.SetFilter("Document Date", '..%1', DateTo);
+//                     CustLEntry.SetRange("Ship-to Code", CustLedgerEntry."Ship-to Code");
+//                     CustLEntry.SetRange("Customer No.", CustLedgerEntry."Customer No.");
+//                     CustLEntry.SetRange(Open, true);
+//                     if CustLEntry.FindSet() then begin
+//                         repeat
+//                             //ΑΞΙΑ ΠΡΟΣ ΣΥΣΧΕΤΙΣΗ
+//                             DetLedgerEntry.Reset();// Παιρνω το Amount απο τον Detailed Cust. Ledg. Entry
+//                             DetLedgerEntry.SetRange("Cust. Ledger Entry No.", CustLEntry."Entry No.");
+//                             if DetLedgerEntry.FindSet() then begin
+//                                 repeat
+//                                     //DetLedgerEntry.CalcFields(Amount);
+//                                     RelatedAmount += DetLedgerEntry.Amount;
+//                                 until DetLedgerEntry.Next() = 0;
+//                             end;
+//                         until CustLEntry.Next() = 0;
+//                     end;
+
+//                     // Για το διάστημα 0-90 ημέρες
+//                     CustLEntry1.Reset();
+//                     CustLEntry1.SetLoadFields("Posting Date", "Document Date", "Customer No.", "Ship-to Code", Amount);
+//                     //CustLEntry1.SetFilter("Posting Date", '..%1', DateTo);
+//                     CustLEntry1.SetRange("Ship-to Code", CustLedgerEntry."Ship-to Code");
+//                     CustLEntry1.SetRange("Customer No.", CustLedgerEntry."Customer No.");
+//                     CustLEntry1.SetRange("Document Date", DateTo - 90, DateTo);
+//                     if CustLEntry1.FindSet() then begin
+//                         repeat
+//                             DetLedgerEntry.Reset();
+//                             DetLedgerEntry.SetRange("Cust. Ledger Entry No.", CustLEntry1."Entry No.");
+//                             if DetLedgerEntry.FindSet() then begin
+//                                 repeat
+//                                     //DetLedgerEntry.CalcFields(Amount);
+//                                     Amount0To90 += DetLedgerEntry.Amount;
+//                                 until DetLedgerEntry.Next() = 0;
+//                             end;
+//                         until CustLEntry1.Next() = 0;
+//                     end;
+
+//                     // Για το διάστημα 91-180 ημέρες
+//                     CustLEntry1.SetRange("Document Date", DateTo - 180, DateTo - 91);
+//                     if CustLEntry1.FindSet() then begin
+//                         repeat
+//                             // DetLedgerEntry.SetRange("Cust. Ledger Entry No.", CustLEntry1."Entry No.");
+//                             // DetLedgerEntry.SetRange();
+//                             CustLEntry1.CalcFields(Amount);
+//                             Amount91To180 += CustLEntry1.Amount;
+//                         until CustLEntry1.Next() = 0;
+//                     end;
+
+//                     // Για το διάστημα 181-270 ημέρες
+//                     CustLEntry1.SetRange("Document Date", DateTo - 270, DateTo - 181);
+//                     if CustLEntry1.FindSet() then begin
+//                         repeat
+//                             CustLEntry1.CalcFields(Amount);
+//                             Amount181To270 += CustLEntry1.Amount;
+//                         until CustLEntry1.Next() = 0;
+//                     end;
+
+//                     // Για το διάστημα 271-360 ημέρες
+//                     CustLEntry1.SetRange("Document Date", DateTo - 360, DateTo - 271);
+//                     if CustLEntry1.FindSet() then begin
+//                         repeat
+//                             CustLEntry1.CalcFields(Amount);
+//                             Amount271To360 += CustLEntry1.Amount;
+//                         until CustLEntry1.Next() = 0;
+//                     end;
+
+//                     // Για το διάστημα 361-450 ημέρες
+//                     CustLEntry1.SetRange("Document Date", DateTo - 450, DateTo - 361);
+//                     if CustLEntry1.FindSet() then begin
+//                         repeat
+//                             CustLEntry1.CalcFields(Amount);
+//                             Amount361To450 += CustLEntry1.Amount;
+//                         until CustLEntry1.Next() = 0;
+//                     end;
+
+//                     // Για διάστημα πάνω από 450 ημέρες
+//                     CustLEntry1.SetFilter("Document Date", '..%1', DateTo - 451);
+//                     if CustLEntry1.FindSet() then begin
+//                         repeat
+//                             CustLEntry1.CalcFields(Amount);
+//                             Amount450Plus += CustLEntry1.Amount;
+//                         until CustLEntry1.Next() = 0;
+//                     end;
+
+//                     TotalDays := Amount0To90 + Amount91To180 + Amount181To270 + Amount271To360 + Amount361To450 + Amount450Plus;
+
+//                     Rec.EntryNo := Rec.GetEntryNo();
+//                     Rec.Sortkey1 := ShipToCode;
+//                     Rec.Text4 := CustomerName;
+//                     Rec.code26 := CustomerNo;
+//                     Rec.code22 := VAT;
+//                     Rec.code10 := PayTermsCode;
+//                     Rec.Text10 := PayDescription;
+//                     Rec.Date3 := MaxDateInv;
+//                     Rec.Date4 := MaxDatePay;
+//                     Rec.Dec01 := InvoiceAmount;
+//                     Rec.Dec02 := CreditAmount;
+//                     Rec.Dec03 := RelatedAmount;
+//                     Rec.Dec04 := Amount;
+//                     Rec.Dec28 := PaymentAmount;
+//                     Rec.Dec14 := Amount;
+//                     Rec.Dec06 := Amount0To90;
+//                     Rec.Dec07 := Amount91To180;
+//                     Rec.Dec08 := Amount181To270;
+//                     Rec.Dec09 := Amount271To360;
+//                     Rec.Dec10 := Amount361To450;
+//                     Rec.Dec11 := Amount450Plus;
+//                     Rec.Dec12 := TotalDays;
+//                     REc.Dec23 := OfficialCreditLimit;
+//                     Rec.code11 := CoverPercentage;
+//                     Rec.Insert(true);
+//                 end;
+
+//             until CustLedgerEntry.Next() = 0;
+//         end;
+//     end;
+// }

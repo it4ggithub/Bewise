@@ -1,0 +1,766 @@
+// table 52061566 "Sort Table RCGRBASE"
+// {
+
+//     fields
+//     {
+//         field(1; EntryNo; Integer)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(2; Sortkey1; Code[20])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(3; Sortkey2; Code[20])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(4; Sortkey3; Text[30])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(5; Sortkey4; Text[30])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(6; Sortkey5; Text[30])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(7; Sortkey6; Text[30])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(100; Int01; Integer)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(101; Int02; Integer)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(102; Int03; Integer)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(103; Int04; Integer)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(200; Dec01; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(201; Dec02; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(202; Dec03; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(203; Dec04; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(204; Dec05; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(205; Dec06; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(206; Dec07; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(207; Dec08; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(208; Dec09; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(209; Dec10; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(210; Dec11; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(211; Dec12; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(212; Dec13; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(213; Dec14; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(214; Dec15; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(215; Dec16; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(216; Dec17; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(217; Dec18; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(218; Dec19; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(219; Dec20; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(220; Dec21; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(221; Dec22; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(222; Dec23; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(223; Dec24; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(224; Dec25; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(225; Dec26; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(226; Dec27; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(227; Dec28; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(228; Dec29; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(229; Dec30; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(230; Dec31; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(231; Dec32; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(232; Dec33; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(233; Dec34; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(234; Dec35; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(235; Dec36; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(236; Dec37; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(237; Dec38; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(238; Dec39; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(239; Dec40; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(240; Dec41; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(241; Dec42; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(242; Dec43; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(243; Dec44; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(244; Dec45; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(245; Dec46; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(246; Dec47; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(247; Dec48; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(248; Dec49; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(249; Dec50; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(250; Dec51; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(251; Dec52; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(252; Dec53; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(253; Dec54; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(254; Dec55; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(255; Dec56; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(256; Dec57; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(257; Dec58; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(258; Dec59; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(259; Dec60; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(260; Dec61; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(261; Dec62; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(262; Dec63; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(263; Dec64; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(264; Dec65; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(265; Dec66; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(266; Dec67; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(267; Dec68; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(268; Dec69; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(269; Dec70; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(270; Dec71; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(271; Dec72; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(272; Dec73; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(273; Dec74; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(274; Dec75; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(275; Dec76; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(276; Dec77; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(277; Dec78; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(278; Dec79; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(279; Dec80; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(280; Dec81; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(281; Dec82; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(282; Dec83; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(283; Dec84; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(284; Dec85; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(285; Dec86; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(286; Dec87; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(287; Dec88; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(288; Dec89; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(289; Dec90; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(290; Dec91; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(291; Dec92; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(292; Dec93; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(293; Dec94; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(294; Dec95; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(295; Dec96; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(296; Dec97; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(297; Dec98; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(298; Dec99; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(299; Dec100; Decimal)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(300; Text1; Text[100])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(301; Text2; Text[100])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(302; Text3; Text[100])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(400; SortDate1; Date)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(401; SortDate2; Date)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(402; Date3; Date)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(403; Date4; Date)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(450; Code3; Code[20])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(451; Code4; Code[20])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(452; Code5; Code[20])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(453; Time; Time)
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(454; Text4; Text[100])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(455; Text5; Text[100])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(456; Text6; Text[100])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(457; Text7; Text[100])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(458; Text8; Text[100])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(459; Text9; Text[100])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//         field(460; Text10; Text[100])
+//         {
+//             DataClassification = CustomerContent;
+//         }
+//     }
+
+//     keys
+//     {
+//         key(Key1; EntryNo)
+//         {
+//         }
+//         key(Key2; Sortkey1, Sortkey2, Sortkey3, Sortkey4)
+//         {
+//             SumIndexFields = Dec01, Dec02, Dec03, Dec04, Dec05;
+//         }
+//         key(Key3; Sortkey2, Sortkey3, Sortkey4)
+//         {
+//             SumIndexFields = Dec01, Dec02, Dec03, Dec04, Dec05;
+//         }
+//         key(Key4; Sortkey3, Sortkey4)
+//         {
+//             SumIndexFields = Dec01, Dec02, Dec03, Dec04, Dec05;
+//         }
+//         key(Key5; Sortkey4)
+//         {
+//             SumIndexFields = Dec01, Dec02, Dec03, Dec04, Dec05;
+//         }
+//         key(Key6; SortDate1, Sortkey2)
+//         {
+//             SumIndexFields = Dec01, Dec02, Dec03, Dec04, Dec05;
+//         }
+//         key(Key7; SortDate1, Sortkey1, Dec01)
+//         {
+//             SumIndexFields = Dec02, Dec03;
+//         }
+//         key(Key8; Sortkey1)
+//         {
+//         }
+//         key(Key9; Sortkey1, Sortkey2, Sortkey3, Sortkey4, Sortkey5, Sortkey6)
+//         {
+//         }
+//         key(Key10; Sortkey6)
+//         {
+//         }
+//         key(Key11; Text3)
+//         {
+//         }
+//         key(Key12; Text4)
+//         {
+//         }
+//         key(Key13; SortDate1, Sortkey1, Sortkey2, Sortkey3)
+//         {
+//         }
+//     }
+
+//     procedure GetEntryNo(): Integer
+//     var
+//         SortTableRec: Record "Sort Table RCGRBASE";
+//         EnNo: Integer;
+//     begin
+//         SortTableRec := Rec;
+//         Reset;
+//         if FindLast then
+//             EnNo := EntryNo + 1
+//         else
+//             EnNo := 1;
+//         Rec := SortTableRec;
+//         exit(EnNo);
+//     end;
+
+//     procedure IsCode1New(): Boolean
+//     var
+//         SortTable: Record "Sort Table RCGRBASE";
+//         ST2: Record "Sort Table RCGRBASE";
+//         RecIsNew: Boolean;
+//     begin
+//         SortTable := Rec;
+//         ST2 := Rec;
+//         Reset;
+//         SetCurrentKey(Sortkey1, Sortkey2, Sortkey3, Sortkey4, Sortkey5, Sortkey6);
+//         RecIsNew := true;
+//         if SortTable.Sortkey1 <> '' then
+//             SetRange(Sortkey1, SortTable.Sortkey1);
+//         if SortTable.Sortkey2 <> '' then
+//             SetRange(Sortkey2, SortTable.Sortkey2);
+//         if FindSet then
+//             repeat
+//                 if SortTable.Sortkey1 = Rec.Sortkey1 then
+//                     if SortTable.Sortkey2 = Rec.Sortkey2 then begin
+//                         RecIsNew := false;
+//                         ST2 := Rec;
+//                     end;
+//             until Next = 0;
+//         if RecIsNew then
+//             Rec := SortTable
+//         else
+//             Rec := ST2;
+//         Rec.Reset;
+//         CopyFilters(SortTable);
+//         exit(RecIsNew);
+//     end;
+
+//     procedure IsCode3New(): Boolean
+//     var
+//         SortTable: Record "Sort Table RCGRBASE";
+//         ST2: Record "Sort Table RCGRBASE";
+//         RecIsNew: Boolean;
+//     begin
+//         SortTable := Rec;
+//         ST2 := Rec;
+//         Reset;
+//         SetCurrentKey(Sortkey1, Sortkey2, Sortkey3, Sortkey4, Sortkey5, Sortkey6);
+//         RecIsNew := true;
+//         if SortTable.Sortkey1 <> '' then
+//             SetRange(Sortkey1, SortTable.Sortkey1);
+//         if SortTable.Sortkey2 <> '' then
+//             SetRange(Sortkey2, SortTable.Sortkey2);
+//         if SortTable.Sortkey3 <> '' then
+//             SetRange(Sortkey3, SortTable.Sortkey3);
+//         if FindSet then
+//             repeat
+//                 if SortTable.Sortkey1 = Rec.Sortkey1 then
+//                     if SortTable.Sortkey2 = Rec.Sortkey2 then
+//                         if SortTable.Sortkey3 = Rec.Sortkey3 then begin
+//                             RecIsNew := false;
+//                             ST2 := Rec;
+//                         end;
+//             until Next = 0;
+//         if RecIsNew then
+//             Rec := SortTable
+//         else
+//             Rec := ST2;
+//         Rec.Reset;
+//         CopyFilters(SortTable);
+//         exit(RecIsNew);
+//     end;
+
+//     procedure IsCode4New(): Boolean
+//     var
+//         SortTable: Record "Sort Table RCGRBASE";
+//         ST2: Record "Sort Table RCGRBASE";
+//         RecIsNew: Boolean;
+//     begin
+//         SortTable := Rec;
+//         ST2 := Rec;
+//         Reset;
+//         SetCurrentKey(Sortkey1, Sortkey2, Sortkey3, Sortkey4, Sortkey5, Sortkey6);
+//         RecIsNew := true;
+//         if SortTable.Sortkey1 <> '' then
+//             SetRange(Sortkey1, SortTable.Sortkey1);
+//         if SortTable.Sortkey2 <> '' then
+//             SetRange(Sortkey2, SortTable.Sortkey2);
+//         if SortTable.Sortkey3 <> '' then
+//             SetRange(Sortkey3, SortTable.Sortkey3);
+//         if SortTable.Sortkey4 <> '' then
+//             SetRange(Sortkey4, SortTable.Sortkey4);
+//         if FindSet then
+//             repeat
+//                 if SortTable.Sortkey1 = Rec.Sortkey1 then
+//                     if SortTable.Sortkey2 = Rec.Sortkey2 then
+//                         if SortTable.Sortkey3 = Rec.Sortkey3 then
+//                             if SortTable.Sortkey4 = Rec.Sortkey4 then begin
+//                                 RecIsNew := false;
+//                                 ST2 := Rec;
+//                             end;
+//             until Next = 0;
+//         if RecIsNew then
+//             Rec := SortTable
+//         else
+//             Rec := ST2;
+//         Rec.Reset;
+//         CopyFilters(SortTable);
+//         exit(RecIsNew);
+//     end;
+
+//     procedure IsCode6New(): Boolean
+//     var
+//         SortTable: Record "Sort Table RCGRBASE";
+//         ST2: Record "Sort Table RCGRBASE";
+//         RecIsNew: Boolean;
+//     begin
+//         SortTable := Rec;
+//         ST2 := Rec;
+//         Reset;
+//         SetCurrentKey(Sortkey1, Sortkey2, Sortkey3, Sortkey4, Sortkey5, Sortkey6);
+//         RecIsNew := true;
+//         if SortTable.Sortkey1 <> '' then
+//             SetRange(Sortkey1, SortTable.Sortkey1);
+//         if SortTable.Sortkey2 <> '' then
+//             SetRange(Sortkey2, SortTable.Sortkey2);
+//         if SortTable.Sortkey3 <> '' then
+//             SetRange(Sortkey3, SortTable.Sortkey3);
+//         if SortTable.Sortkey4 <> '' then
+//             SetRange(Sortkey4, SortTable.Sortkey4);
+//         if SortTable.Sortkey5 <> '' then
+//             SetRange(Sortkey5, SortTable.Sortkey5);
+//         if SortTable.Sortkey6 <> '' then
+//             SetRange(Sortkey6, SortTable.Sortkey6);
+//         if FindSet then
+//             repeat
+//                 if SortTable.Sortkey1 = Rec.Sortkey1 then
+//                     if SortTable.Sortkey2 = Rec.Sortkey2 then
+//                         if SortTable.Sortkey3 = Rec.Sortkey3 then
+//                             if SortTable.Sortkey4 = Rec.Sortkey4 then
+//                                 if SortTable.Sortkey5 = Rec.Sortkey5 then
+//                                     if SortTable.Sortkey6 = Rec.Sortkey6 then begin
+//                                         RecIsNew := false;
+//                                         ST2 := Rec;
+//                                     end;
+//             until Next = 0;
+//         if RecIsNew then
+//             Rec := SortTable
+//         else
+//             Rec := ST2;
+//         Rec.Reset;
+//         CopyFilters(SortTable);
+//         exit(RecIsNew);
+//     end;
+
+//     procedure IsSortKey6New(): Boolean
+//     var
+//         SortTable: Record "Sort Table RCGRBASE";
+//         ST2: Record "Sort Table RCGRBASE";
+//         RecIsNew: Boolean;
+//     begin
+//         SortTable := Rec;
+//         ST2 := Rec;
+//         Reset;
+//         SetCurrentKey(Sortkey6);
+//         RecIsNew := true;
+//         if SortTable.Sortkey6 <> '' then
+//             SetRange(Sortkey6, SortTable.Sortkey6);
+//         if FindSet then
+//             repeat
+//                 if SortTable.Sortkey6 = Rec.Sortkey6 then begin
+//                     RecIsNew := false;
+//                     ST2 := Rec;
+//                 end;
+//             until Next = 0;
+//         if RecIsNew then
+//             Rec := SortTable
+//         else
+//             Rec := ST2;
+//         Rec.Reset;
+//         CopyFilters(SortTable);
+//         exit(RecIsNew);
+//     end;
+// }
+
