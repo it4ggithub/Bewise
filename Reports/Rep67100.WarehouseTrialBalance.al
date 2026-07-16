@@ -111,12 +111,16 @@ report 67100 "Warehouse Trial Balance"
                 column(Quantity_from_sale_exp; Quantity_from_sale_exp) { }
                 column(Quantity_from_prod; Quantity_from_prod) { }
                 column(Quantity_from_cons; Quantity_from_cons) { }
+                column(Quantity_from_census; Quantity_from_census) { }
                 column(Quantity_from_other_pos; Quantity_from_other_pos) { }
                 column(Quantity_from_other_neg; Quantity_from_other_neg) { }
                 column(countN; countN) { }
                 column(Quantity_from_transfer; Quantity_from_transfer) { }
                 column(Quantity_from_transfer_exp; Quantity_from_transfer_exp) { }
                 column(Amount_from_transfer; Amount_from_transfer) { }
+                column(Amount_from_census; Amount_from_census) { }
+                column(Quantity_from_prev_period; Quantity_from_prev_period) { }
+                column(Amount_from_prev_period; Amount_from_prev_period) { }
                 column(Quantity_from_self; Quantity_from_self) { }
                 column(Amount_from_self; Amount_from_self) { }
                 // column(item_description; item_description) { }
@@ -155,6 +159,8 @@ report 67100 "Warehouse Trial Balance"
                     Customers: Record Customer;
                     dimension: Record Dimension;
                     location: Record Location;
+                    PrevPeriodStartDate: Date;
+                    PrevPeriodEndDate: Date;
 
                 begin
 
@@ -178,6 +184,8 @@ report 67100 "Warehouse Trial Balance"
                     Clear(Quantity_from_transfer);
                     Clear(Amount_from_transfer);
                     Clear(Quantity_from_transfer_exp);
+                    Clear(Quantity_from_prev_period);
+                    Clear(Amount_from_prev_period);
 
                     // Logic for populating transfer-related values based on posting date
                     if StartDate <> 0D then begin
@@ -194,6 +202,16 @@ report 67100 "Warehouse Trial Balance"
                                 Quantity_from_transfer_exp := "Item Ledger Entry Quantity"; // here are receipts
                             end;
                             Amount_from_transfer := "Cost Amount (Actual)";
+                            // Also add transfer entries to purchase fields
+                            if "Item Ledger Entry Quantity" = 0 then begin
+                                Quantity_from_purch := "Invoiced Quantity";
+                                Quantity_from_purch_exp := -"Invoiced Quantity";
+                            end else if "Invoiced Quantity" <> 0 then begin
+                                Quantity_from_purch := "Invoiced Quantity";
+                            end else begin
+                                Quantity_from_purch_exp := "Item Ledger Entry Quantity";
+                            end;
+                            Amount_from_purch := "Cost Amount (Actual)";
                         end;
 
                         if "Posting Date" >= StartDate then begin
@@ -216,6 +234,8 @@ report 67100 "Warehouse Trial Balance"
                     Clear(Amount_from_prod);
                     Clear(Quantity_from_cons);
                     Clear(Amount_from_cons);
+                    Clear(Quantity_from_census);
+                    Clear(Amount_from_census);
                     Clear(Quantity_from_other_pos);
                     Clear(Quantity_from_other_neg);
                     Clear(Amount_from_other_pos);
@@ -231,75 +251,68 @@ report 67100 "Warehouse Trial Balance"
                     Clear(costfromGBE);
                     Clear(totalcost);
 
+                    if (StartDate <> 0D) and (Date2DMY(StartDate, 2) > 1) then begin
+                        PrevPeriodStartDate := DMY2Date(1, 1, Date2DMY(StartDate, 3));
+                        PrevPeriodEndDate := CalcDate('<-1D>', DMY2Date(1, Date2DMY(StartDate, 2), Date2DMY(StartDate, 3)));
+
+                        if ("Posting Date" >= PrevPeriodStartDate) and ("Posting Date" <= PrevPeriodEndDate) and ("Document No." <> 'ΕΓΓΡΑΦΈΣ ΑΠΟΓΡΑΦΉΣ') then begin
+                            Quantity_from_prev_period := "Item Ledger Entry Quantity";
+                            Amount_from_prev_period := "Cost Amount (Actual)";
+                        end;
+                    end;
+
                     // Logic to handle different types of item ledger entries (Purchase, Sale, Output, etc.)
 
-                    if "Posting Date" >= StartDate then begin
+                    if ("Document No." = 'ΕΓΓΡΑΦΈΣ ΑΠΟΓΡΑΦΉΣ') and ((StartDate = 0D) or ("Posting Date" < StartDate)) then begin
+                        Quantity_from_census := "Item Ledger Entry Quantity";
+                        Amount_from_census := "Cost Amount (Actual)";
+                    end else
+                        if "Posting Date" >= StartDate then begin
+                            case "Item Ledger Entry Type" of
 
-                        case "Item Ledger Entry Type" of
+                                "Item Ledger Entry Type"::Purchase:
+                                    begin
+                                        // Goal is when I sum all values for an item to have a value (Quantity_from_purch_exp) that symbolises the quantity that has been shipped but not invoiced.
+                                        // Quantity_from_purch := "Item Ledger Entry Quantity";
+                                        if "Item Ledger Entry Quantity" = 0 then begin  // here are invoices based on a receipt
+                                            Quantity_from_purch := "Invoiced Quantity";
+                                            Quantity_from_purch_exp := -"Invoiced Quantity";
+                                        end else if "Invoiced Quantity" <> 0 then begin // here are invoices NOT based on a receipt
+                                            Quantity_from_purch := "Invoiced Quantity";
+                                        end else begin
+                                            Quantity_from_purch_exp := "Item Ledger Entry Quantity"; // here are receipts
+                                        end;
 
-                            "Item Ledger Entry Type"::Purchase:
-                                begin
-                                    // Goal is when I sum all values for an item to have a value (Quantity_from_purch_exp) that symbolises the quantity that has been shipped but not invoiced.
-                                    // Quantity_from_purch := "Item Ledger Entry Quantity";
-                                    if "Item Ledger Entry Quantity" = 0 then begin  // here are invoices based on a receipt
-                                        Quantity_from_purch := "Invoiced Quantity";
-                                        Quantity_from_purch_exp := -"Invoiced Quantity";
-                                    end else if "Invoiced Quantity" <> 0 then begin // here are invoices NOT based on a receipt
-                                        Quantity_from_purch := "Invoiced Quantity";
-                                    end else begin
-                                        Quantity_from_purch_exp := "Item Ledger Entry Quantity"; // here are receipts
+
+                                        // Quantity_from_purch := "Invoiced Quantity";
+                                        Amount_from_purch := "Purchase Amount (Actual)";
+                                        Amount_from_purch_exp := "Purchase Amount (Expected)";
+
                                     end;
 
+                                "Item Ledger Entry Type"::Sale:
+                                    begin
+                                        // Goal is when I sum all values for an item to have a value (Quantity_from_purch_exp) that symbolises the quantity that has been shipped but not invoiced.
+                                        //Quantity_from_sale := "Item Ledger Entry Quantity";
+                                        if "Item Ledger Entry Quantity" = 0 then begin  // here are invoices based on a shipment
+                                            Quantity_from_sale := "Invoiced Quantity";
+                                            Quantity_from_sale_exp := -"Invoiced Quantity";
+                                        end else if "Invoiced Quantity" <> 0 then begin // here are invoices NOT based on a shipment
+                                            Quantity_from_sale := "Invoiced Quantity";
+                                        end else begin
+                                            Quantity_from_sale_exp := "Item Ledger Entry Quantity"; // here are Shipments
+                                        end;
+                                        // Quantity_from_sale := "Invoiced Quantity";
+                                        // Quantity_from_sale_exp := "Item Ledger Entry Quantity";
+                                        Amount_from_sale := "Sales Amount (Actual)";
+                                        Amount_from_sale_exp := "Sales Amount (Expected)";
+                                        Cost_from_sale := "Cost Amount (Actual)";
+                                        Cost_from_sale_exp := "Cost Amount (Expected)";
 
-                                    // Quantity_from_purch := "Invoiced Quantity";
-                                    Amount_from_purch := "Purchase Amount (Actual)";
-                                    Amount_from_purch_exp := "Purchase Amount (Expected)";
 
-                                end;
-
-                            "Item Ledger Entry Type"::Sale:
-                                begin
-                                    // Goal is when I sum all values for an item to have a value (Quantity_from_purch_exp) that symbolises the quantity that has been shipped but not invoiced.
-                                    //Quantity_from_sale := "Item Ledger Entry Quantity";
-                                    if "Item Ledger Entry Quantity" = 0 then begin  // here are invoices based on a shipment
-                                        Quantity_from_sale := "Invoiced Quantity";
-                                        Quantity_from_sale_exp := -"Invoiced Quantity";
-                                    end else if "Invoiced Quantity" <> 0 then begin // here are invoices NOT based on a shipment
-                                        Quantity_from_sale := "Invoiced Quantity";
-                                    end else begin
-                                        Quantity_from_sale_exp := "Item Ledger Entry Quantity"; // here are Shipments
                                     end;
-                                    // Quantity_from_sale := "Invoiced Quantity";
-                                    // Quantity_from_sale_exp := "Item Ledger Entry Quantity";
-                                    Amount_from_sale := "Sales Amount (Actual)";
-                                    Amount_from_sale_exp := "Sales Amount (Expected)";
-                                    Cost_from_sale := "Cost Amount (Actual)";
-                                    Cost_from_sale_exp := "Cost Amount (Expected)";
-
-
-                                end;
-                            "Item Ledger Entry Type"::Output:
-                                begin
-                                    Quantity_from_prod := "Item Ledger Entry Quantity";
-                                    Amount_from_prod := "Cost Amount (Actual)";
-                                    //? cost from ---
-                                    costfromYL := "Cost Component 1 RCGRBASE";
-                                    costfromER := "Cost Component 3 RCGRBASE";
-                                    costfromGBE := "Cost Component 2 RCGRBASE";
-                                    totalcost := costfromYL + costfromER + costfromGBE;
-                                end;
-                            //??? what do I do with this ?????????????????????
-                            "Item Ledger Entry Type"::" ":
-                                begin
-                                    Clear(costfromYL);
-                                    Clear(costfromER);
-                                    Clear(costfromGBE);
-                                    Clear(totalcost);
-                                end;
-                            "Item Ledger Entry Type"::Consumption:
-                                begin
-                                    if "Cost Component 2 RCGRBASE" <> 0 then begin
-                                        // subproduct production
+                                "Item Ledger Entry Type"::Output:
+                                    begin
                                         Quantity_from_prod := "Item Ledger Entry Quantity";
                                         Amount_from_prod := "Cost Amount (Actual)";
                                         //? cost from ---
@@ -307,42 +320,62 @@ report 67100 "Warehouse Trial Balance"
                                         costfromER := "Cost Component 3 RCGRBASE";
                                         costfromGBE := "Cost Component 2 RCGRBASE";
                                         totalcost := costfromYL + costfromER + costfromGBE;
-                                    end else begin
-                                        Quantity_from_cons := "Item Ledger Entry Quantity";
-                                        Amount_from_cons := "Cost Amount (Actual)";
                                     end;
-                                    // if "Item Ledger Entry Quantity" < 0 then begin
+                                //??? what do I do with this ?????????????????????
+                                "Item Ledger Entry Type"::" ":
+                                    begin
+                                        Clear(costfromYL);
+                                        Clear(costfromER);
+                                        Clear(costfromGBE);
+                                        Clear(totalcost);
+                                    end;
+                                "Item Ledger Entry Type"::Consumption:
+                                    begin
+                                        if "Cost Component 2 RCGRBASE" <> 0 then begin
+                                            // subproduct production
+                                            Quantity_from_prod := "Item Ledger Entry Quantity";
+                                            Amount_from_prod := "Cost Amount (Actual)";
+                                            //? cost from ---
+                                            costfromYL := "Cost Component 1 RCGRBASE";
+                                            costfromER := "Cost Component 3 RCGRBASE";
+                                            costfromGBE := "Cost Component 2 RCGRBASE";
+                                            totalcost := costfromYL + costfromER + costfromGBE;
+                                        end else begin
+                                            Quantity_from_cons := "Item Ledger Entry Quantity";
+                                            Amount_from_cons := "Cost Amount (Actual)";
+                                        end;
+                                        // if "Item Ledger Entry Quantity" < 0 then begin
 
-                                    // end else begin // arnitiki analwsi einai paragwgi
-                                    //     Quantity_from_prod := "Item Ledger Entry Quantity";
-                                    //     Amount_from_prod := "Cost Amount (Actual)";
-                                    //     //? cost from ---
-                                    //     costfromYL := "Cost Component 1 RCGRBASE";
-                                    //     costfromER := "Cost Component 3 RCGRBASE";
-                                    //     costfromGBE := "Cost Component 2 RCGRBASE";
-                                    //     totalcost := costfromYL + costfromER + costfromGBE;
-                                    // end;
+                                        // end else begin // arnitiki analwsi einai paragwgi
+                                        //     Quantity_from_prod := "Item Ledger Entry Quantity";
+                                        //     Amount_from_prod := "Cost Amount (Actual)";
+                                        //     //? cost from ---
+                                        //     costfromYL := "Cost Component 1 RCGRBASE";
+                                        //     costfromER := "Cost Component 3 RCGRBASE";
+                                        //     costfromGBE := "Cost Component 2 RCGRBASE";
+                                        //     totalcost := costfromYL + costfromER + costfromGBE;
+                                        // end;
 
-                                end;
+                                    end;
 
-                            else begin
-
-                                if "Item Ledger Entry Quantity" > 0 then begin
-                                    Quantity_from_other_pos := "Item Ledger Entry Quantity";
-                                end
                                 else begin
-                                    Quantity_from_other_neg := "Item Ledger Entry Quantity";
-                                end;
 
-                                if "Cost Amount (Actual)" > 0 then begin
-                                    Amount_from_other_pos := "Cost Amount (Actual)";
-                                end
-                                else begin
-                                    Amount_from_other_neg := "Cost Amount (Actual)";
+                                    if "Item Ledger Entry Quantity" > 0 then begin
+                                        Quantity_from_other_pos := "Item Ledger Entry Quantity";
+                                    end
+                                    else begin
+                                        Quantity_from_other_neg := "Item Ledger Entry Quantity";
+                                    end;
+
+                                    if "Cost Amount (Actual)" > 0 then begin
+                                        Amount_from_other_pos := "Cost Amount (Actual)";
+                                    end
+                                    else begin
+                                        Amount_from_other_neg := "Cost Amount (Actual)";
+                                    end;
                                 end;
                             end;
                         end;
-                    end;
 
                     // cases of Source Types need to call difrent table each time :( 
                     case "Source Type" of
@@ -437,9 +470,11 @@ report 67100 "Warehouse Trial Balance"
         // item_logcat: Code[20];
         Quantity_from_transfer: Decimal;
         Quantity_from_transfer_exp: Decimal;
+        Quantity_from_prev_period: Decimal;
         Quantity_from_purch: Decimal;
         Quantity_from_purch_exp: Decimal;
         Quantity_from_cons: Decimal;
+        Quantity_from_census: Decimal;
         Quantity_from_prod: Decimal;
         Quantity_from_sale: Decimal;
         Quantity_from_sale_exp: Decimal;
@@ -447,9 +482,11 @@ report 67100 "Warehouse Trial Balance"
         Quantity_from_other_pos: Decimal;
         Quantity_from_other_neg: Decimal;
         Amount_from_transfer: Decimal;
+        Amount_from_prev_period: Decimal;
         Amount_from_purch: Decimal;
         Amount_from_purch_exp: Decimal;
         Amount_from_cons: Decimal;
+        Amount_from_census: Decimal;
         Amount_from_prod: Decimal;
         Amount_from_sale: Decimal;
         Amount_from_sale_exp: Decimal;
