@@ -23,6 +23,11 @@ report 67100 "Warehouse Trial Balance"
             column(LocationFilter; LocationFilter) { }
             column(GlobalDim1Filter; GlobalDim1Filter) { }
             column(GlobalDim2Filter; GlobalDim2Filter) { }
+            trigger OnPreDataItem()
+            begin
+                "Company Information".ReadIsolation := IsolationLevel::ReadUncommitted;
+            end;
+
             trigger OnAfterGetRecord()
             begin
                 LocationFilter := GetFilter("Location Code");
@@ -140,6 +145,7 @@ report 67100 "Warehouse Trial Balance"
                 trigger OnPreDataItem()
 
                 begin
+                    ValueEntry.ReadIsolation := IsolationLevel::ReadUncommitted;
                     if StartDate <> 0D then begin
                         SetRange("Posting Date", 0D, EndDate);
                     end
@@ -255,7 +261,7 @@ report 67100 "Warehouse Trial Balance"
                         PrevPeriodStartDate := DMY2Date(1, 1, Date2DMY(StartDate, 3));
                         PrevPeriodEndDate := CalcDate('<-1D>', DMY2Date(1, Date2DMY(StartDate, 2), Date2DMY(StartDate, 3)));
 
-                        if ("Posting Date" >= PrevPeriodStartDate) and ("Posting Date" <= PrevPeriodEndDate) and ("Document No." <> 'ΕΓΓΡΑΦΈΣ ΑΠΟΓΡΑΦΉΣ') then begin
+                        if ("Posting Date" >= PrevPeriodStartDate) and ("Posting Date" <= PrevPeriodEndDate) and ("Document No." <> 'ΕΓΓΡΑΦΈΣ ΑΠΟΓΡΑΦΉΣ') and ("Document No." <> 'ΕΓΓΡΑΦΕΣ ΑΠΟΓΡΑΦΗΣ') and (COPYSTR("Document No.", 1, 3) <> 'ΑΠ.') then begin
                             Quantity_from_prev_period := "Item Ledger Entry Quantity";
                             Amount_from_prev_period := "Cost Amount (Actual)";
                         end;
@@ -263,7 +269,7 @@ report 67100 "Warehouse Trial Balance"
 
                     // Logic to handle different types of item ledger entries (Purchase, Sale, Output, etc.)
 
-                    if ("Document No." = 'ΕΓΓΡΑΦΈΣ ΑΠΟΓΡΑΦΉΣ') and ((StartDate = 0D) or ("Posting Date" < StartDate)) then begin
+                    if (("Document No." = 'ΕΓΓΡΑΦΈΣ ΑΠΟΓΡΑΦΉΣ') or ("Document No." = 'ΕΓΓΡΑΦΕΣ ΑΠΟΓΡΑΦΗΣ') or (COPYSTR("Document No.", 1, 3) = 'ΑΠ.')) and ((StartDate = 0D) or ("Posting Date" < StartDate)) then begin
                         Quantity_from_census := "Item Ledger Entry Quantity";
                         Amount_from_census := "Cost Amount (Actual)";
                     end else
@@ -378,6 +384,9 @@ report 67100 "Warehouse Trial Balance"
                         end;
 
                     // cases of Source Types need to call difrent table each time :( 
+                    if UseValuationCostForProduction then
+                        ApplyValuationCostAdjustments("Item No.", "Location Code", "Variant Code");
+
                     case "Source Type" of
                         "Source Type"::Customer:
                             begin
@@ -408,6 +417,7 @@ report 67100 "Warehouse Trial Balance"
             trigger OnPreDataItem()
 
             begin
+                Item.ReadIsolation := IsolationLevel::ReadUncommitted;
                 ItemCounter := 0;
             end;
 
@@ -443,22 +453,24 @@ report 67100 "Warehouse Trial Balance"
 
                 }
                 // group("Options")
-                // {
-                //     field(HideItemsWithoutValueEntries; HideItemsWithoutValueEntries)
-                //     {
-                //         ApplicationArea = All;
-                //         Caption = 'Hide Items Without Value Entries';
-                //     }
-                // }
+                group("Options")
+                {
+                    field(UseValuationCostForProduction; UseValuationCostForProduction)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Use Valuation Cost Adjustments';
+                        ToolTip = 'When enabled, census amounts are recalculated from Valuation Cost RCGRBASE and production cost components are read from valuation cost. Other amount fields continue to come from the Value Entry table.';
+
+                    }
+                }
             }
         }
-        // trigger OnOpenPage()
-        // begin
+        trigger OnOpenPage()
+        begin
 
-        //     if EndDate = 0D then
-        //         EndDate := Today;
+            UseValuationCostForProduction := true;
 
-        // end;
+        end;
 
     }
 
@@ -513,4 +525,59 @@ report 67100 "Warehouse Trial Balance"
         costfromER: Decimal;
         costfromGBE: Decimal;
         totalcost: Decimal;
+        UseValuationCostForProduction: Boolean;
+
+    local procedure ApplyValuationCostAdjustments(ItemNo: Code[20]; LocationCode: Code[10]; VariantCode: Code[10])
+    var
+        ValuationCost: Record "Valuation Cost RCGRBASE";
+        ValuationUnitCost: Decimal;
+        ValComp1: Decimal;
+        ValComp2: Decimal;
+        ValComp3: Decimal;
+        ValComp4: Decimal;
+    begin
+        if not FindValuationCost(ItemNo, LocationCode, VariantCode, ValuationCost) then
+            exit;
+
+        ValuationUnitCost := ValuationCost."Valuation Cost per Unit";
+        ValComp1 := ValuationCost."Cost Component 1";
+        ValComp2 := ValuationCost."Cost Component 2";
+        ValComp3 := ValuationCost."Cost Component 3";
+        ValComp4 := ValuationCost."Cost Component 4";
+
+        if Quantity_from_census <> 0 then
+            Amount_from_census := Round(Quantity_from_census * ValuationUnitCost, 0.01);
+
+        if Quantity_from_prod <> 0 then begin
+            // Business mapping: 1=YLika, 2=Amesa Ergatika, 3=Fason, 4=GBE, 5=unused.
+            costfromYL := ValComp1;
+            costfromER := ValComp2;
+            costfromGBE := ValComp4;
+            totalcost := ValComp1 + ValComp2 + ValComp3 + ValComp4;
+        end;
+    end;
+
+    local procedure FindValuationCost(ItemNo: Code[20]; LocationCode: Code[10]; VariantCode: Code[10]; var ValuationCost: Record "Valuation Cost RCGRBASE"): Boolean
+    begin
+        ValuationCost.Reset();
+        ValuationCost.SetRange("Item No.", ItemNo);
+
+        // Primary: exact location + variant.
+        ValuationCost.SetRange("Location Code", LocationCode);
+        ValuationCost.SetRange("Variant Code", VariantCode);
+        if ValuationCost.FindFirst() then
+            exit(true);
+
+        // Fallback 1: exact location, any variant.
+        ValuationCost.SetRange("Variant Code");
+        if ValuationCost.FindFirst() then
+            exit(true);
+
+        // Fallback 2: any location, any variant.
+        ValuationCost.SetRange("Location Code");
+        if ValuationCost.FindFirst() then
+            exit(true);
+
+        exit(false);
+    end;
 }

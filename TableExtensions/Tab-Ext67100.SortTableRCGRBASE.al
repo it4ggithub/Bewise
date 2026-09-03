@@ -14,12 +14,21 @@ tableextension 67100 "Sort Table RCGRBASE Ext" extends "Sort Table RCGRBASE"
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
         CustLEntry: Record "Cust. Ledger Entry";
+        Customer: Record Customer;
         AsOfDate: Date;
         InvoiceAmount: Decimal;
         CreditAmount: Decimal;
         Amount: Decimal;
         RelatedAmount: Decimal;
     begin
+        if (Rec.Code26 <> '') and Customer.Get(Rec.Code26) then begin
+            Rec.Bool1 := Customer.Insured;
+            if IsExcludedCustomerPostingGroup(Customer."Customer Posting Group") then begin
+                Rec.Delete();
+                exit;
+            end;
+        end;
+
         AsOfDate := DMY2Date(31, 12, 2025);
 
         // Recalculate Dec01-Dec04 like the original page logic, without Ship-to Code filter.
@@ -178,6 +187,20 @@ tableextension 67100 "Sort Table RCGRBASE Ext" extends "Sort Table RCGRBASE"
             until CustLedgerEntry.Next() = 0;
 
         exit(CustLedgerAmount);
+    end;
+
+    local procedure IsExcludedCustomerPostingGroup(CustomerPostingGroup: Code[20]): Boolean
+    begin
+        case CustomerPostingGroup of
+            'ΑΥΤΟΠΑΡΑΔΟΤΟ',
+            'ΜΕΤΑΒΑΤΙΚ1',
+            'ΜΕΤΑΒΑΤΙΚ2',
+            'ΜΕΤΑΒΑΤΙΚ3',
+            'ΜΕΤΑΒΑΤΙΚ4':
+                exit(true);
+        end;
+
+        exit(false);
     end;
 
     local procedure SumDetailedAmountForEntry(CustLedgerEntryNo: Integer; AsOfDate: Date): Decimal
