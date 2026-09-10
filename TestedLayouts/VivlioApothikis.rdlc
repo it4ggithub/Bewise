@@ -68,21 +68,6 @@
         <Field Name="Item_Category_Code">
           <DataField>Item_Category_Code</DataField>
         </Field>
-        <Field Name="Item_Category_1">
-          <DataField>Item_Category_1</DataField>
-        </Field>
-        <Field Name="Item_Category_2">
-          <DataField>Item_Category_2</DataField>
-        </Field>
-        <Field Name="Item_Category_3">
-          <DataField>Item_Category_3</DataField>
-        </Field>
-        <Field Name="Item_Category_4">
-          <DataField>Item_Category_4</DataField>
-        </Field>
-        <Field Name="Item_Category_5">
-          <DataField>Item_Category_5</DataField>
-        </Field>
         <Field Name="itemAA">
           <DataField>itemAA</DataField>
         </Field>
@@ -227,6 +212,12 @@
         <Field Name="Quantity_from_consFormat">
           <DataField>Quantity_from_consFormat</DataField>
         </Field>
+        <Field Name="Quantity_from_census">
+          <DataField>Quantity_from_census</DataField>
+        </Field>
+        <Field Name="Quantity_from_censusFormat">
+          <DataField>Quantity_from_censusFormat</DataField>
+        </Field>
         <Field Name="Quantity_from_other_pos">
           <DataField>Quantity_from_other_pos</DataField>
         </Field>
@@ -259,6 +250,24 @@
         </Field>
         <Field Name="Amount_from_transferFormat">
           <DataField>Amount_from_transferFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_census">
+          <DataField>Amount_from_census</DataField>
+        </Field>
+        <Field Name="Amount_from_censusFormat">
+          <DataField>Amount_from_censusFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_prev_period">
+          <DataField>Quantity_from_prev_period</DataField>
+        </Field>
+        <Field Name="Quantity_from_prev_periodFormat">
+          <DataField>Quantity_from_prev_periodFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_prev_period">
+          <DataField>Amount_from_prev_period</DataField>
+        </Field>
+        <Field Name="Amount_from_prev_periodFormat">
+          <DataField>Amount_from_prev_periodFormat</DataField>
         </Field>
         <Field Name="Quantity_from_self">
           <DataField>Quantity_from_self</DataField>
@@ -9931,6 +9940,7 @@
                         <TablixMember>
                           <Visibility>
                             <Hidden>=IIF(
+  Abs(IIF(IsNothing(Sum(fields!Quantity_from_census.Value,"ItemNo")),0,Sum(Fields!Quantity_from_census.Value,"ItemNo"))) +
   Abs(IIF(IsNothing(Sum(Fields!Quantity_from_transfer.Value, "ItemNo")),0,Sum(Fields!Quantity_from_transfer.Value, "ItemNo"))) +
   Abs(IIF(IsNothing(Sum(Fields!Amount_from_transfer.Value, "ItemNo")),0,Sum(Fields!Amount_from_transfer.Value, "ItemNo"))) +
   Abs(IIF(IsNothing(Sum(Fields!Quantity_from_purch.Value, "ItemNo")),0,Sum(Fields!Quantity_from_purch.Value, "ItemNo"))) +
@@ -9969,7 +9979,7 @@
             <DataSetName>DataSet_Result</DataSetName>
             <Top>4.84132cm</Top>
             <Height>4.59604cm</Height>
-            <Width>95.95854cm</Width>
+            <Width>95.95853cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>

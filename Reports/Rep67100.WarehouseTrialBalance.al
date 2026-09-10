@@ -7,6 +7,7 @@ report 67100 "Warehouse Trial Balance"
     dataset
     {
 
+        // Company header data is emitted once and reused by the RDLC layout.
         dataitem("Company Information"; "Company Information")
         {
             DataItemTableView = sorting("Primary Key");
@@ -25,17 +26,21 @@ report 67100 "Warehouse Trial Balance"
             column(GlobalDim2Filter; GlobalDim2Filter) { }
             trigger OnPreDataItem()
             begin
+                // This report is read-only, so lower isolation helps reduce blocking.
                 "Company Information".ReadIsolation := IsolationLevel::ReadUncommitted;
             end;
 
             trigger OnAfterGetRecord()
             begin
+                // Echo the active request filters so the layout can print them.
                 LocationFilter := GetFilter("Location Code");
                 // GlobalDim1Filter := GetFilter("Global Dimension 1 Code");
                 // GlobalDim2Filter := GetFilter("Global Dimension 2 Code");
             end;
 
         }
+
+        // The report iterates items first so the layout stays grouped by item.
         dataitem(Item; Item)
         {
             DataItemTableView = sorting("No.");
@@ -45,6 +50,7 @@ report 67100 "Warehouse Trial Balance"
             column(Description; Description) { }
             column(Inventory_Posting_Group; "Inventory Posting Group") { }
             column(Item_Category_Code; "Item Category Code") { }
+            column(ESIL_Only_Value; "ESIL Only Value") { }
             // column(Item_Category_1; "Item Category 1") { }
             // column(Item_Category_2; "Item Category 2") { }
             // column(Item_Category_3; "Item Category 3") { }
@@ -56,12 +62,14 @@ report 67100 "Warehouse Trial Balance"
             //added this data item to incoporate the zone code
 
 
+            // Value entries are the main fact source for quantities and amounts.
             dataitem(ValueEntry; "Value Entry")
             {
                 DataItemLink = "Item No." = field("No.");
                 DataItemTableView = sorting("Posting Date");
 
                 RequestFilterFields = "Location Code";
+                // These columns are consumed directly by the RDLC layout.
                 column(HasValueEntry; HasValueEntry) { } // added for hidding logic in RDL
                 column(PostingDate; "Posting Date")
                 {
@@ -72,10 +80,10 @@ report 67100 "Warehouse Trial Balance"
                 column(ItemNo; "Item No.")
                 {
                 }
-                column(InvoicedQuantity; "Invoiced Quantity")
+                column(InvoicedQuantity; DisplayInvoicedQuantity)
                 {
                 }
-                column(ItemLedgerEntryQuantity; "Item Ledger Entry Quantity")
+                column(ItemLedgerEntryQuantity; DisplayItemLedgerEntryQuantity)
                 {
                 }
                 column(LocationCode; "Location Code")
@@ -145,6 +153,7 @@ report 67100 "Warehouse Trial Balance"
                 trigger OnPreDataItem()
 
                 begin
+                    // Read with low isolation and restrict the scan to the requested end date.
                     ValueEntry.ReadIsolation := IsolationLevel::ReadUncommitted;
                     if StartDate <> 0D then begin
                         SetRange("Posting Date", 0D, EndDate);
@@ -167,8 +176,13 @@ report 67100 "Warehouse Trial Balance"
                     location: Record Location;
                     PrevPeriodStartDate: Date;
                     PrevPeriodEndDate: Date;
+                    IsCensusEntry: Boolean;
+                    IsEsilOnlyValue: Boolean;
 
                 begin
+
+                    DisplayInvoicedQuantity := "Invoiced Quantity";
+                    DisplayItemLedgerEntryQuantity := "Item Ledger Entry Quantity";
 
                     // Get location Name
                     Clear(loc_des);
@@ -178,42 +192,45 @@ report 67100 "Warehouse Trial Balance"
 
                     // Get Unit of Measurment
                     clear(UnitOfMeas);
+                    Clear(IsEsilOnlyValue);
                     if item.Get("Item No.") then begin
                         // item_description := item.Description;
                         // item_logcat := item."Inventory Posting Group";
                         UnitOfMeas := item."Base Unit of Measure";
+                        IsEsilOnlyValue := item."ESIL Only Value";
                     end;
 
                     //Get zone code
 
 
+                    // Reset transfer and previous-period buckets before classifying the row.
                     Clear(Quantity_from_transfer);
                     Clear(Amount_from_transfer);
                     Clear(Quantity_from_transfer_exp);
                     Clear(Quantity_from_prev_period);
                     Clear(Amount_from_prev_period);
 
-                    // Logic for populating transfer-related values based on posting date
+                    // Transfer-like entries before the requested period are treated as opening movements.
                     if StartDate <> 0D then begin
                         // ek metaforas kanonika
                         if ("Posting Date" < StartDate) then begin
                             // Quantity_from_transfer := "Invoiced Quantity";
                             // Quantity_from_transfer_exp := "Item Ledger Entry Quantity";
                             if "Item Ledger Entry Quantity" = 0 then begin  // here are invoices based on a receipt
-                                Quantity_from_transfer := "Invoiced Quantity";
-                                Quantity_from_transfer_exp := -"Invoiced Quantity";
+                                Quantity_from_transfer := "Item Ledger Entry Quantity";
+                                Quantity_from_transfer_exp := -"Item Ledger Entry Quantity";
                             end else if "Invoiced Quantity" <> 0 then begin // here are invoices NOT based on a receipt
-                                Quantity_from_transfer := "Invoiced Quantity";
+                                Quantity_from_transfer := "Item Ledger Entry Quantity";
                             end else begin
                                 Quantity_from_transfer_exp := "Item Ledger Entry Quantity"; // here are receipts
                             end;
                             Amount_from_transfer := "Cost Amount (Actual)";
                             // Also add transfer entries to purchase fields
                             if "Item Ledger Entry Quantity" = 0 then begin
-                                Quantity_from_purch := "Invoiced Quantity";
-                                Quantity_from_purch_exp := -"Invoiced Quantity";
+                                Quantity_from_purch := "Item Ledger Entry Quantity";
+                                Quantity_from_purch_exp := -"Item Ledger Entry Quantity";
                             end else if "Invoiced Quantity" <> 0 then begin
-                                Quantity_from_purch := "Invoiced Quantity";
+                                Quantity_from_purch := "Item Ledger Entry Quantity";
                             end else begin
                                 Quantity_from_purch_exp := "Item Ledger Entry Quantity";
                             end;
@@ -230,7 +247,7 @@ report 67100 "Warehouse Trial Balance"
 
                     end;
 
-                    // Clear transaction amounts and quantities before calculating new values
+                    // Clear all movement buckets so only the matching branch fills them.
 
                     Clear(Quantity_from_purch);
                     Clear(Quantity_from_purch_exp);
@@ -257,35 +274,47 @@ report 67100 "Warehouse Trial Balance"
                     Clear(costfromGBE);
                     Clear(totalcost);
 
+                    // Census rows are now identified only by the requested date rules.
+                    IsCensusEntry := IsCensusPostingDateEligible("Posting Date");
+
+                    // Previous-period values are limited to the months before StartDate in the same year.
+                    // From November 2025 onward, never pull prior-period movements from before 31/10/2025.
                     if (StartDate <> 0D) and (Date2DMY(StartDate, 2) > 1) then begin
                         PrevPeriodStartDate := DMY2Date(1, 1, Date2DMY(StartDate, 3));
+                        if StartDate >= DMY2Date(1, 11, 2025) then
+                            if PrevPeriodStartDate < DMY2Date(31, 10, 2025) then
+                                PrevPeriodStartDate := DMY2Date(31, 10, 2025);
+
                         PrevPeriodEndDate := CalcDate('<-1D>', DMY2Date(1, Date2DMY(StartDate, 2), Date2DMY(StartDate, 3)));
 
-                        if ("Posting Date" >= PrevPeriodStartDate) and ("Posting Date" <= PrevPeriodEndDate) and ("Document No." <> 'ΕΓΓΡΑΦΈΣ ΑΠΟΓΡΑΦΉΣ') and ("Document No." <> 'ΕΓΓΡΑΦΕΣ ΑΠΟΓΡΑΦΗΣ') and (COPYSTR("Document No.", 1, 3) <> 'ΑΠ.') then begin
+                        if ("Posting Date" >= PrevPeriodStartDate) and ("Posting Date" <= PrevPeriodEndDate) and not IsCensusEntry then begin
                             Quantity_from_prev_period := "Item Ledger Entry Quantity";
                             Amount_from_prev_period := "Cost Amount (Actual)";
                         end;
                     end;
 
-                    // Logic to handle different types of item ledger entries (Purchase, Sale, Output, etc.)
+                    // Census entries are handled before normal movement classification.
 
-                    if (("Document No." = 'ΕΓΓΡΑΦΈΣ ΑΠΟΓΡΑΦΉΣ') or ("Document No." = 'ΕΓΓΡΑΦΕΣ ΑΠΟΓΡΑΦΗΣ') or (COPYSTR("Document No.", 1, 3) = 'ΑΠ.')) and ((StartDate = 0D) or ("Posting Date" < StartDate)) then begin
+                    if IsCensusEntry then begin
                         Quantity_from_census := "Item Ledger Entry Quantity";
                         Amount_from_census := "Cost Amount (Actual)";
                     end else
                         if "Posting Date" >= StartDate then begin
+                            // All non-census movements are mapped into one report bucket by entry type.
                             case "Item Ledger Entry Type" of
 
                                 "Item Ledger Entry Type"::Purchase:
                                     begin
+                                        // Purchase rows split invoiced quantity from expected quantity.
                                         // Goal is when I sum all values for an item to have a value (Quantity_from_purch_exp) that symbolises the quantity that has been shipped but not invoiced.
                                         // Quantity_from_purch := "Item Ledger Entry Quantity";
                                         if "Item Ledger Entry Quantity" = 0 then begin  // here are invoices based on a receipt
-                                            Quantity_from_purch := "Invoiced Quantity";
-                                            Quantity_from_purch_exp := -"Invoiced Quantity";
+                                            Quantity_from_purch := "Item Ledger Entry Quantity";
+                                            Quantity_from_purch_exp := -"Item Ledger Entry Quantity";
                                         end else if "Invoiced Quantity" <> 0 then begin // here are invoices NOT based on a receipt
-                                            Quantity_from_purch := "Invoiced Quantity";
+                                            Quantity_from_purch := "Item Ledger Entry Quantity";
                                         end else begin
+                                            Quantity_from_purch := "Item Ledger Entry Quantity";
                                             Quantity_from_purch_exp := "Item Ledger Entry Quantity"; // here are receipts
                                         end;
 
@@ -298,14 +327,16 @@ report 67100 "Warehouse Trial Balance"
 
                                 "Item Ledger Entry Type"::Sale:
                                     begin
+                                        // Sale rows use the same invoiced-versus-expected split as purchases.
                                         // Goal is when I sum all values for an item to have a value (Quantity_from_purch_exp) that symbolises the quantity that has been shipped but not invoiced.
                                         //Quantity_from_sale := "Item Ledger Entry Quantity";
                                         if "Item Ledger Entry Quantity" = 0 then begin  // here are invoices based on a shipment
-                                            Quantity_from_sale := "Invoiced Quantity";
-                                            Quantity_from_sale_exp := -"Invoiced Quantity";
+                                            Quantity_from_sale := "Item Ledger Entry Quantity";
+                                            Quantity_from_sale_exp := -"Item Ledger Entry Quantity";
                                         end else if "Invoiced Quantity" <> 0 then begin // here are invoices NOT based on a shipment
-                                            Quantity_from_sale := "Invoiced Quantity";
+                                            Quantity_from_sale := "Item Ledger Entry Quantity";
                                         end else begin
+                                            Quantity_from_sale := "Item Ledger Entry Quantity";
                                             Quantity_from_sale_exp := "Item Ledger Entry Quantity"; // here are Shipments
                                         end;
                                         // Quantity_from_sale := "Invoiced Quantity";
@@ -319,6 +350,7 @@ report 67100 "Warehouse Trial Balance"
                                     end;
                                 "Item Ledger Entry Type"::Output:
                                     begin
+                                        // Output rows represent production receipts.
                                         Quantity_from_prod := "Item Ledger Entry Quantity";
                                         Amount_from_prod := "Cost Amount (Actual)";
                                         //? cost from ---
@@ -330,6 +362,7 @@ report 67100 "Warehouse Trial Balance"
                                 //??? what do I do with this ?????????????????????
                                 "Item Ledger Entry Type"::" ":
                                     begin
+                                        // Blank entry type contributes no production cost breakdown.
                                         Clear(costfromYL);
                                         Clear(costfromER);
                                         Clear(costfromGBE);
@@ -337,6 +370,7 @@ report 67100 "Warehouse Trial Balance"
                                     end;
                                 "Item Ledger Entry Type"::Consumption:
                                     begin
+                                        // Consumption with component 2 populated is treated as subproduct output.
                                         if "Cost Component 2 RCGRBASE" <> 0 then begin
                                             // subproduct production
                                             Quantity_from_prod := "Item Ledger Entry Quantity";
@@ -365,6 +399,7 @@ report 67100 "Warehouse Trial Balance"
                                     end;
 
                                 else begin
+                                    // All remaining entry types fall into generic positive or negative buckets.
 
                                     if "Item Ledger Entry Quantity" > 0 then begin
                                         Quantity_from_other_pos := "Item Ledger Entry Quantity";
@@ -383,10 +418,15 @@ report 67100 "Warehouse Trial Balance"
                             end;
                         end;
 
-                    // cases of Source Types need to call difrent table each time :( 
+                    // Optional valuation adjustments only affect census values and production cost breakdown.
                     if UseValuationCostForProduction then
-                        ApplyValuationCostAdjustments("Item No.", "Location Code", "Variant Code");
+                        ApplyValuationCostAdjustments("Item No.", "Location Code", "Posting Date", "Variant Code");
 
+                    // ESIL-only items keep their amounts but must expose zero quantities everywhere.
+                    if IsEsilOnlyValue then
+                        ZeroReportQuantities();
+
+                    // Source names are resolved late because they depend on the row source type.
                     case "Source Type" of
                         "Source Type"::Customer:
                             begin
@@ -417,6 +457,7 @@ report 67100 "Warehouse Trial Balance"
             trigger OnPreDataItem()
 
             begin
+                // Read item master data without taking stronger locks than necessary.
                 Item.ReadIsolation := IsolationLevel::ReadUncommitted;
                 ItemCounter := 0;
             end;
@@ -425,12 +466,15 @@ report 67100 "Warehouse Trial Balance"
 
             begin
 
+                // Simple running counter used by the layout.
                 ItemCounter := ItemCounter + 1;
 
             end;
         }
 
     }
+
+    // Request page only controls the reporting period and optional valuation adjustments.
     requestpage
     {
         SaveValues = true;
@@ -458,6 +502,7 @@ report 67100 "Warehouse Trial Balance"
                     field(UseValuationCostForProduction; UseValuationCostForProduction)
                     {
                         ApplicationArea = All;
+                        // This toggle keeps Value Entry amounts but applies valuation-based census and production adjustments.
                         Caption = 'Use Valuation Cost Adjustments';
                         ToolTip = 'When enabled, census amounts are recalculated from Valuation Cost RCGRBASE and production cost components are read from valuation cost. Other amount fields continue to come from the Value Entry table.';
 
@@ -475,6 +520,7 @@ report 67100 "Warehouse Trial Balance"
     }
 
 
+    // Report state is stored in globals because the RDLC dataset reads the calculated buckets directly.
     var
         StartDate: Date;
         EndDate: Date;
@@ -513,6 +559,8 @@ report 67100 "Warehouse Trial Balance"
         countN: Integer;
         Name: Text[100];
         ItemCounter: Integer; // Variable for the item counter to be displayed in ItemAA
+        DisplayInvoicedQuantity: Decimal;
+        DisplayItemLedgerEntryQuantity: Decimal;
         UnitOfMeas: Code[20];
         loc_des: text[100];
         LocationFilter: Text[100];
@@ -527,7 +575,8 @@ report 67100 "Warehouse Trial Balance"
         totalcost: Decimal;
         UseValuationCostForProduction: Boolean;
 
-    local procedure ApplyValuationCostAdjustments(ItemNo: Code[20]; LocationCode: Code[10]; VariantCode: Code[10])
+    // Valuation adjustments are applied after the row has already been classified from Value Entry.
+    local procedure ApplyValuationCostAdjustments(ItemNo: Code[20]; LocationCode: Code[10]; PostingDate: Date; VariantCode: Code[10])
     var
         ValuationCost: Record "Valuation Cost RCGRBASE";
         ValuationUnitCost: Decimal;
@@ -536,31 +585,53 @@ report 67100 "Warehouse Trial Balance"
         ValComp3: Decimal;
         ValComp4: Decimal;
     begin
-        if not FindValuationCost(ItemNo, LocationCode, VariantCode, ValuationCost) then
+        if not FindValuationCost(ItemNo, LocationCode, PostingDate, VariantCode, ValuationCost) then
             exit;
 
+        // Pull both the unit cost and the production components from the valuation table.
         ValuationUnitCost := ValuationCost."Valuation Cost per Unit";
         ValComp1 := ValuationCost."Cost Component 1";
         ValComp2 := ValuationCost."Cost Component 2";
         ValComp3 := ValuationCost."Cost Component 3";
         ValComp4 := ValuationCost."Cost Component 4";
 
+        // Census keeps its quantity from Value Entry but can be revalued from the valuation table.
         if Quantity_from_census <> 0 then
-            Amount_from_census := Round(Quantity_from_census * ValuationUnitCost, 0.01);
+            Amount_from_census := Quantity_from_census * ValuationUnitCost; //BW_TM remove wrong rounding.
 
         if Quantity_from_prod <> 0 then begin
             // Business mapping: 1=YLika, 2=Amesa Ergatika, 3=Fason, 4=GBE, 5=unused.
-            costfromYL := ValComp1;
-            costfromER := ValComp2;
-            costfromGBE := ValComp4;
-            totalcost := ValComp1 + ValComp2 + ValComp3 + ValComp4;
+            costfromYL := ValComp1 * Quantity_from_prod;
+            costfromER := ValComp2 * Quantity_from_prod;
+            costfromGBE := ValComp4 * Quantity_from_prod;
+            totalcost := (ValComp1 + ValComp2 + ValComp3 + ValComp4) * Quantity_from_prod;
         end;
     end;
 
-    local procedure FindValuationCost(ItemNo: Code[20]; LocationCode: Code[10]; VariantCode: Code[10]; var ValuationCost: Record "Valuation Cost RCGRBASE"): Boolean
+    // Valuation records are matched by item, location, variant, and the costing period covering the posting date.
+    local procedure FindValuationCost(ItemNo: Code[20]; LocationCode: Code[10]; PostingDate: Date; VariantCode: Code[10]; var ValuationCost: Record "Valuation Cost RCGRBASE"): Boolean
+    var
+        CostingPeriod: Record "Costing Period RCGRBASE";
+        SelectedCostingPeriodCode: Text[50];
+        SelectedStartingDate: Date;
     begin
+        // When multiple periods cover the date, choose the one with the latest starting date.
+        CostingPeriod.Reset();
+        CostingPeriod.SetFilter("Starting Date", '<=%1', PostingDate);
+        CostingPeriod.SetFilter("Ending Date", '>=%1', PostingDate);
+        if CostingPeriod.FindSet() then
+            repeat
+                if (SelectedCostingPeriodCode = '') or (CostingPeriod."Starting Date" > SelectedStartingDate) then begin
+                    SelectedCostingPeriodCode := CostingPeriod.Code;
+                    SelectedStartingDate := CostingPeriod."Starting Date";
+                end;
+            until CostingPeriod.Next() = 0
+        else
+            exit(false);
+
         ValuationCost.Reset();
         ValuationCost.SetRange("Item No.", ItemNo);
+        ValuationCost.SetRange("Valuation Period", SelectedCostingPeriodCode);
 
         // Primary: exact location + variant.
         ValuationCost.SetRange("Location Code", LocationCode);
@@ -579,5 +650,36 @@ report 67100 "Warehouse Trial Balance"
             exit(true);
 
         exit(false);
+    end;
+
+    // Census rows use a special cutoff for 2025, otherwise they behave like the original pre-period check.
+    local procedure IsCensusPostingDateEligible(PostingDate: Date): Boolean
+    begin
+        if StartDate = 0D then
+            exit(true);
+
+        if Date2DMY(StartDate, 3) = 2025 then
+            exit(PostingDate <= DMY2Date(31, 10, 2025));
+
+        exit(PostingDate < StartDate);
+    end;
+
+    local procedure ZeroReportQuantities()
+    begin
+        DisplayInvoicedQuantity := 0;
+        DisplayItemLedgerEntryQuantity := 0;
+        Quantity_from_transfer := 0;
+        Quantity_from_transfer_exp := 0;
+        Quantity_from_prev_period := 0;
+        Quantity_from_purch := 0;
+        Quantity_from_purch_exp := 0;
+        Quantity_from_cons := 0;
+        Quantity_from_census := 0;
+        Quantity_from_prod := 0;
+        Quantity_from_sale := 0;
+        Quantity_from_sale_exp := 0;
+        Quantity_from_self := 0;
+        Quantity_from_other_pos := 0;
+        Quantity_from_other_neg := 0;
     end;
 }
