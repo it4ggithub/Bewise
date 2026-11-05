@@ -147,6 +147,7 @@ report 67100 "Warehouse Trial Balance"
                 column(costfromER; costfromER) { }
                 column(costfromGBE; costfromGBE) { }
                 column(totalcost; totalcost) { }
+                column(ValuationCostPerUnit; ValuationCostPerUnit) { }
 
 
                 // Filter records based on the start date
@@ -178,11 +179,16 @@ report 67100 "Warehouse Trial Balance"
                     PrevPeriodEndDate: Date;
                     IsCensusEntry: Boolean;
                     IsEsilOnlyValue: Boolean;
+                    ValuationCostForEndDate: Record "Valuation Cost RCGRBASE";
 
                 begin
 
                     DisplayInvoicedQuantity := "Invoiced Quantity";
                     DisplayItemLedgerEntryQuantity := "Item Ledger Entry Quantity";
+
+                    Clear(ValuationCostPerUnit);
+                    if (EndDate <> 0D) and FindValuationCost("Item No.", "Location Code", EndDate, "Variant Code", ValuationCostForEndDate) then
+                        ValuationCostPerUnit := ValuationCostForEndDate."Valuation Cost per Unit";
 
                     // Get location Name
                     Clear(loc_des);
@@ -467,7 +473,10 @@ report 67100 "Warehouse Trial Balance"
             begin
 
                 // Simple running counter used by the layout.
-                ItemCounter := ItemCounter + 1;
+                if CopyStr("No.", 1, 4) = '199-' then
+                    CurrReport.Skip()
+                else
+                    ItemCounter := ItemCounter + 1;
 
             end;
         }
@@ -573,6 +582,7 @@ report 67100 "Warehouse Trial Balance"
         costfromER: Decimal;
         costfromGBE: Decimal;
         totalcost: Decimal;
+        ValuationCostPerUnit: Decimal;
         UseValuationCostForProduction: Boolean;
 
     // Valuation adjustments are applied after the row has already been classified from Value Entry.
