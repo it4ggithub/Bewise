@@ -329,6 +329,18 @@
         <Field Name="ValuationCostPerUnitFormat">
           <DataField>ValuationCostPerUnitFormat</DataField>
         </Field>
+        <Field Name="EndQuantity">
+          <DataField>EndQuantity</DataField>
+        </Field>
+        <Field Name="EndQuantityFormat">
+          <DataField>EndQuantityFormat</DataField>
+        </Field>
+        <Field Name="EndValue">
+          <DataField>EndValue</DataField>
+        </Field>
+        <Field Name="EndValueFormat">
+          <DataField>EndValueFormat</DataField>
+        </Field>
       </Fields>
     </DataSet>
   </DataSets>
@@ -8306,7 +8318,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=ReportItems!Textbox23.value + ReportItems!Textbox88.value -  ReportItems!Textbox60.value + ReportItems!Textbox63.value - ReportItems!Textbox128.value - ReportItems!Textbox281.value + ReportItems!Textbox196.value - ReportItems!Textbox256.value</Value>
+                                  <Value>=Sum(Fields!EndQuantity.Value, "ItemNo")</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>8pt</FontSize>
@@ -8364,7 +8376,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=ReportItems!Textbox317.Value * First(Fields!ValuationCostPerUnit.Value, "ItemNo")</Value>
+                                  <Value>=Sum(Fields!EndValue.Value, "ItemNo")</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>8pt</FontSize>
@@ -9773,7 +9785,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=sum(Fields!Quantity_from_transfer.Value, "Group1") + Sum(Fields!Quantity_from_purch.Value, "Group1")+sum(Fields!Quantity_from_cons.Value, "Group1")+sum(Fields!Quantity_from_prod.Value, "Group1")+sum(Fields!Quantity_from_sale.Value, "Group1")+sum(Fields!Quantity_from_other_pos.Value, "Group1")+sum(Fields!Quantity_from_other_neg.Value, "Group1")</Value>
+                                  <Value>=Sum(Fields!EndQuantity.Value, "Group1")</Value>
                                   <Style>
                                     <FontStyle>Normal</FontStyle>
                                     <FontFamily>Tahoma</FontFamily>
@@ -9814,7 +9826,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=ReportItems!Textbox119.value + ReportItems!Textbox124.value -  ReportItems!Textbox129.value + ReportItems!Textbox131.value -ReportItems!Textbox140.value</Value>
+                                  <Value>=Sum(Fields!EndValue.Value, "Group1")</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>8pt</FontSize>
