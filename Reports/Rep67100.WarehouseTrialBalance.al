@@ -469,14 +469,30 @@ report 67100 "Warehouse Trial Balance"
             end;
 
             trigger OnAfterGetRecord()
-
+            var
+                TempVE: Record "Value Entry";
+                TempValuationCost: Record "Valuation Cost RCGRBASE";
             begin
 
                 // Simple running counter used by the layout.
                 if (CopyStr("No.", 1, 3) = '199') and ("Item Category Code" = 'ΠΡΟΙΟΝΤΑ') then
                     CurrReport.Skip()
-                else
+                else begin
+                    // Optionally hide items with no end stock or valuation cost.
+                    if HideZeroEndValues then begin
+                        TempVE.CopyFilters(ValueEntry);
+                        TempVE.SetRange("Item No.", "No.");
+                        TempVE.SetRange("Posting Date", 0D, EndDate);
+                        TempVE.CalcSums("Item Ledger Entry Quantity");
+                        if TempVE."Item Ledger Entry Quantity" = 0 then
+                            CurrReport.Skip();
+                        if not FindValuationCost("No.", '', EndDate, '', TempValuationCost) then
+                            CurrReport.Skip();
+                        if TempValuationCost."Valuation Cost per Unit" = 0 then
+                            CurrReport.Skip();
+                    end;
                     ItemCounter := ItemCounter + 1;
+                end;
 
             end;
         }
