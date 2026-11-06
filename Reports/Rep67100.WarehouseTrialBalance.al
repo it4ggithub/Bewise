@@ -4,6 +4,7 @@ report 67100 "Warehouse Trial Balance"
     Caption = 'Warehouse Trial Balance BW';
 
     UsageCategory = ReportsAndAnalysis;
+    RDLCLayout = 'TestedLayouts/VivlioApothikis.rdlc';
     dataset
     {
 
