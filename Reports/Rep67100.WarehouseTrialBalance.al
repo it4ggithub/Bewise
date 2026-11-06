@@ -516,6 +516,12 @@ report 67100 "Warehouse Trial Balance"
                         ToolTip = 'When enabled, census amounts are recalculated from Valuation Cost RCGRBASE and production cost components are read from valuation cost. Other amount fields continue to come from the Value Entry table.';
 
                     }
+                    field(HideZeroEndValues; HideZeroEndValues)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Hide Items Without Stock or Valuation Cost';
+                        ToolTip = 'When enabled, only items that have stock (end quantity) and a valuation cost at the ending date are included in the report.';
+                    }
                 }
             }
         }
@@ -584,6 +590,7 @@ report 67100 "Warehouse Trial Balance"
         totalcost: Decimal;
         ValuationCostPerUnit: Decimal;
         UseValuationCostForProduction: Boolean;
+        HideZeroEndValues: Boolean;
 
     // Valuation adjustments are applied after the row has already been classified from Value Entry.
     local procedure ApplyValuationCostAdjustments(ItemNo: Code[20]; LocationCode: Code[10]; PostingDate: Date; VariantCode: Code[10])
