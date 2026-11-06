@@ -473,7 +473,7 @@ report 67100 "Warehouse Trial Balance"
             begin
 
                 // Simple running counter used by the layout.
-                if CopyStr("No.", 1, 4) = '199-' then
+                if (CopyStr("No.", 1, 3) = '199') and ("Item Category Code" = 'ΠΡΟΙΟΝΤΑ') then
                     CurrReport.Skip()
                 else
                     ItemCounter := ItemCounter + 1;
