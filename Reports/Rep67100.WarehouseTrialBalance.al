@@ -148,6 +148,8 @@ report 67100 "Warehouse Trial Balance"
                 column(costfromGBE; costfromGBE) { }
                 column(totalcost; totalcost) { }
                 column(ValuationCostPerUnit; ValuationCostPerUnit) { }
+                column(EndQuantity; EndQuantity) { }
+                column(EndValue; EndValue) { }
 
 
                 // Filter records based on the start date
@@ -453,6 +455,10 @@ report 67100 "Warehouse Trial Balance"
 
                     end;
 
+                    // End-of-period snapshot per row: data-signed bucket sum mirrors layout cell arithmetic
+                    // (cons/sale/other_neg buckets hold negative data; the layout's subtracted displays equal these adds).
+                    EndQuantity := Quantity_from_census + Quantity_from_purch + Quantity_from_cons + Quantity_from_prod + Quantity_from_sale - Quantity_from_self + Quantity_from_other_pos + Quantity_from_other_neg;
+                    EndValue := EndQuantity * ValuationCostPerUnit;
 
 
 
@@ -605,6 +611,8 @@ report 67100 "Warehouse Trial Balance"
         costfromGBE: Decimal;
         totalcost: Decimal;
         ValuationCostPerUnit: Decimal;
+        EndQuantity: Decimal;
+        EndValue: Decimal;
         UseValuationCostForProduction: Boolean;
         HideZeroEndValues: Boolean;
 
