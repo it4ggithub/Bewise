@@ -68,6 +68,9 @@
         <Field Name="Item_Category_Code">
           <DataField>Item_Category_Code</DataField>
         </Field>
+        <Field Name="ESIL_Only_Value">
+          <DataField>ESIL_Only_Value</DataField>
+        </Field>
         <Field Name="itemAA">
           <DataField>itemAA</DataField>
         </Field>
@@ -320,6 +323,12 @@
         <Field Name="totalcostFormat">
           <DataField>totalcostFormat</DataField>
         </Field>
+        <Field Name="ValuationCostPerUnit">
+          <DataField>ValuationCostPerUnit</DataField>
+        </Field>
+        <Field Name="ValuationCostPerUnitFormat">
+          <DataField>ValuationCostPerUnitFormat</DataField>
+        </Field>
       </Fields>
     </DataSet>
   </DataSets>
@@ -358,10 +367,10 @@
                   <Width>2.5cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.36771cm</Width>
+                  <Width>2.52646cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.5cm</Width>
+                  <Width>2.55292cm</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>2.5cm</Width>
@@ -8355,7 +8364,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=ReportItems!Textbox87.value + ReportItems!Textbox59.value -  ReportItems!Textbox48.value + ReportItems!Textbox184.value -ReportItems!Textbox232.value - ReportItems!Textbox208.value</Value>
+                                  <Value>=ReportItems!Textbox317.Value * First(Fields!ValuationCostPerUnit.Value, "ItemNo")</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>8pt</FontSize>
@@ -9979,7 +9988,7 @@
             <DataSetName>DataSet_Result</DataSetName>
             <Top>4.84132cm</Top>
             <Height>4.59604cm</Height>
-            <Width>95.95853cm</Width>
+            <Width>96.1702cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>
