@@ -496,8 +496,9 @@ report 67100 "Warehouse Trial Balance"
                 else begin
                     // Pre-check: skip items whose every location group lacks end stock or valuation cost.
                     if HideZeroEndValues and (not ItemHasStockAndCost("No.")) then
-                        CurrReport.Skip();
-                    ItemCounter := ItemCounter + 1;
+                        CurrReport.Skip()
+                    else
+                        ItemCounter := ItemCounter + 1;
                 end;
 
             end;
