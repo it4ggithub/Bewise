@@ -4,6 +4,7 @@ report 67100 "Warehouse Trial Balance"
     Caption = 'Warehouse Trial Balance BW';
 
     UsageCategory = ReportsAndAnalysis;
+    RDLCLayout = 'TestedLayouts/VivlioApothikis.rdlc';
     dataset
     {
 
@@ -148,6 +149,8 @@ report 67100 "Warehouse Trial Balance"
                 column(costfromGBE; costfromGBE) { }
                 column(totalcost; totalcost) { }
                 column(ValuationCostPerUnit; ValuationCostPerUnit) { }
+                column(EndQuantity; EndQuantity) { }
+                column(EndValue; EndValue) { }
 
 
                 // Filter records based on the start date
@@ -163,6 +166,8 @@ report 67100 "Warehouse Trial Balance"
                     else begin
                         SetRange("Posting Date", 0D, EndDate);
                     end;
+                    GroupChecked := false;
+                    Clear(CheckedLocationCode);
                 end;
 
                 // After fetching the record, populate additional fields based on item and location
@@ -182,6 +187,16 @@ report 67100 "Warehouse Trial Balance"
                     ValuationCostForEndDate: Record "Valuation Cost RCGRBASE";
 
                 begin
+                    // Hide-on-toggle: evaluate once per item+location group, before any per-row work.
+                    if HideZeroEndValues then begin
+                        if (not GroupChecked) or ("Location Code" <> CheckedLocationCode) then begin
+                            CheckedLocationCode := "Location Code";
+                            GroupChecked := true;
+                            SkipCurrentGroup := not LocationHasStockAndCost("Item No.", "Location Code");
+                        end;
+                        if SkipCurrentGroup then
+                            CurrReport.Skip();
+                    end;
 
                     DisplayInvoicedQuantity := "Invoiced Quantity";
                     DisplayItemLedgerEntryQuantity := "Item Ledger Entry Quantity";
@@ -453,6 +468,10 @@ report 67100 "Warehouse Trial Balance"
 
                     end;
 
+                    // End-of-period snapshot per row: data-signed bucket sum mirrors layout cell arithmetic
+                    // (cons/sale/other_neg buckets hold negative data; the layout's subtracted displays equal these adds).
+                    EndQuantity := Quantity_from_census + Quantity_from_purch + Quantity_from_cons + Quantity_from_prod + Quantity_from_sale - Quantity_from_self + Quantity_from_other_pos + Quantity_from_other_neg;
+                    EndValue := EndQuantity * ValuationCostPerUnit;
 
 
 
@@ -469,14 +488,18 @@ report 67100 "Warehouse Trial Balance"
             end;
 
             trigger OnAfterGetRecord()
-
             begin
 
                 // Simple running counter used by the layout.
-                if CopyStr("No.", 1, 4) = '199-' then
+                if (CopyStr("No.", 1, 3) = '199') and ("Item Category Code" = 'ΠΡΟΙΟΝΤΑ') then
                     CurrReport.Skip()
-                else
-                    ItemCounter := ItemCounter + 1;
+                else begin
+                    // Pre-check: skip items whose every location group lacks end stock or valuation cost.
+                    if HideZeroEndValues and (not ItemHasStockAndCost("No.")) then
+                        CurrReport.Skip()
+                    else
+                        ItemCounter := ItemCounter + 1;
+                end;
 
             end;
         }
@@ -515,6 +538,12 @@ report 67100 "Warehouse Trial Balance"
                         Caption = 'Use Valuation Cost Adjustments';
                         ToolTip = 'When enabled, census amounts are recalculated from Valuation Cost RCGRBASE and production cost components are read from valuation cost. Other amount fields continue to come from the Value Entry table.';
 
+                    }
+                    field(HideZeroEndValues; HideZeroEndValues)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Hide Items Without Stock or Valuation Cost';
+                        ToolTip = 'When enabled, only item and location rows that have stock (end quantity) and a valuation cost at the ending date are included in the report.';
                     }
                 }
             }
@@ -583,7 +612,13 @@ report 67100 "Warehouse Trial Balance"
         costfromGBE: Decimal;
         totalcost: Decimal;
         ValuationCostPerUnit: Decimal;
+        EndQuantity: Decimal;
+        EndValue: Decimal;
         UseValuationCostForProduction: Boolean;
+        HideZeroEndValues: Boolean;
+        SkipCurrentGroup: Boolean;
+        CheckedLocationCode: Code[10];
+        GroupChecked: Boolean;
 
     // Valuation adjustments are applied after the row has already been classified from Value Entry.
     local procedure ApplyValuationCostAdjustments(ItemNo: Code[20]; LocationCode: Code[10]; PostingDate: Date; VariantCode: Code[10])
@@ -659,6 +694,80 @@ report 67100 "Warehouse Trial Balance"
         if ValuationCost.FindFirst() then
             exit(true);
 
+        exit(false);
+    end;
+
+    local procedure LocationEndQuantity(ItemNo: Code[20]; LocationCode: Code[10]) Qty: Decimal
+    var
+        TempVE: Record "Value Entry";
+        CensusCutoffDate: Date;
+        MovementStartDate: Date;
+    begin
+        // Mirrors the displayed end-quantity bucket set: census rows (any type, <= 2025 cutoff for
+        // 2025 start dates) + movement rows (non-blank entry type) from StartDate; prev_period rows
+        // and blank-type rows contribute nothing to the display, so they contribute nothing here.
+        TempVE.ReadIsolation := IsolationLevel::ReadUncommitted;
+        TempVE.SetRange("Item No.", ItemNo);
+        TempVE.SetRange("Location Code", LocationCode);
+        TempVE.SetRange("Posting Date", 0D, EndDate);
+        if StartDate = 0D then begin
+            TempVE.CalcSums("Item Ledger Entry Quantity");
+            exit(TempVE."Item Ledger Entry Quantity");
+        end;
+        if Date2DMY(StartDate, 3) = 2025 then
+            CensusCutoffDate := DMY2Date(31, 10, 2025)
+        else
+            CensusCutoffDate := CalcDate('<-1D>', StartDate);
+        if CensusCutoffDate > EndDate then
+            CensusCutoffDate := EndDate;
+        TempVE.SetRange("Posting Date", 0D, CensusCutoffDate);
+        TempVE.CalcSums("Item Ledger Entry Quantity");
+        Qty := TempVE."Item Ledger Entry Quantity";
+        MovementStartDate := StartDate;
+        if (Date2DMY(StartDate, 3) = 2025) and (StartDate <= CensusCutoffDate) then
+            MovementStartDate := CalcDate('<1D>', CensusCutoffDate);
+        TempVE.SetRange("Posting Date", MovementStartDate, EndDate);
+        TempVE.SetFilter("Item Ledger Entry Type", '<>%1', "Item Ledger Entry Type"::" ");
+        TempVE.CalcSums("Item Ledger Entry Quantity");
+        exit(Qty + TempVE."Item Ledger Entry Quantity");
+    end;
+
+    local procedure LocationHasStockAndCost(ItemNo: Code[20]; LocationCode: Code[10]): Boolean
+    var
+        ValCost: Record "Valuation Cost RCGRBASE";
+    begin
+        if LocationEndQuantity(ItemNo, LocationCode) = 0 then
+            exit(false);
+        if not FindValuationCost(ItemNo, LocationCode, EndDate, '', ValCost) then
+            exit(false);
+        exit(ValCost."Valuation Cost per Unit" <> 0);
+    end;
+
+    local procedure ItemHasStockAndCost(ItemNo: Code[20]): Boolean
+    var
+        TempVE: Record "Value Entry";
+        LastLocationCode: Code[10];
+        FirstRow: Boolean;
+    begin
+        // Distinct-location walk. SetCurrentKey is best-effort: if no such key exists the primary
+        // key is used and locations may interleave - redundant checks are idempotent, so only perf,
+        // never correctness, is affected.
+        TempVE.ReadIsolation := IsolationLevel::ReadUncommitted;
+        TempVE.SetLoadFields("Location Code");
+        TempVE.SetRange("Item No.", ItemNo);
+        TempVE.SetRange("Posting Date", 0D, EndDate);
+        if not TempVE.SetCurrentKey("Item No.", "Location Code") then;
+        if TempVE.FindSet() then begin
+            FirstRow := true;
+            repeat
+                if FirstRow or (TempVE."Location Code" <> LastLocationCode) then begin
+                    if LocationHasStockAndCost(ItemNo, TempVE."Location Code") then
+                        exit(true);
+                    LastLocationCode := TempVE."Location Code";
+                    FirstRow := false;
+                end;
+            until TempVE.Next() = 0;
+        end;
         exit(false);
     end;
 
