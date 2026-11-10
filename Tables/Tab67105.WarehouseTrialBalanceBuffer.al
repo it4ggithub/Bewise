@@ -157,11 +157,17 @@ table 67105 "Warehouse TB Summary Buffer"
         field(51; "Valuation Cost per Unit"; Decimal)
         {
         }
+        field(52; "End Quantity"; Decimal)
+        {
+        }
+        field(53; "End Value"; Decimal)
+        {
+        }
     }
 
     keys
     {
-        key(PK; "Item No.", "Location Code")
+        key(PK; "Item No.", "Location Code", "Source Name")
         {
             Clustered = true;
         }

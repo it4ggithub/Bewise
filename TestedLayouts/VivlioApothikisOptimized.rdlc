@@ -10287,6 +10287,18 @@ End Function
         <Field Name="ValuationCostPerUnitFormat">
           <DataField>ValuationCostPerUnitFormat</DataField>
         </Field>
+        <Field Name="EndQuantity">
+          <DataField>EndQuantity</DataField>
+        </Field>
+        <Field Name="EndQuantityFormat">
+          <DataField>EndQuantityFormat</DataField>
+        </Field>
+        <Field Name="EndValue">
+          <DataField>EndValue</DataField>
+        </Field>
+        <Field Name="EndValueFormat">
+          <DataField>EndValueFormat</DataField>
+        </Field>
       </Fields>
       <Query>
         <DataSourceName>DataSource</DataSourceName>

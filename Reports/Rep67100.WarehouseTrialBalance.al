@@ -1,7 +1,7 @@
 report 67100 "Warehouse Trial Balance"
 {
     ApplicationArea = All;
-    Caption = 'Warehouse Trial Balance BW';
+    Caption = 'Warehouse Trial Balance BW (Old)';
 
     UsageCategory = ReportsAndAnalysis;
     RDLCLayout = 'TestedLayouts/VivlioApothikis.rdlc';

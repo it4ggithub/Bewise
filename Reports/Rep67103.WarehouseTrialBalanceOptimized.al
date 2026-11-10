@@ -1,7 +1,7 @@
 report 67103 "Warehouse TB Optimized"
 {
     ApplicationArea = All;
-    Caption = 'Warehouse Trial Balance BW Optimized';
+    Caption = 'Warehouse Trial Balance BW';
 
     DefaultLayout = RDLC;
     RDLCLayout = 'TestedLayouts/VivlioApothikisOptimized.rdlc';
@@ -101,8 +101,20 @@ report 67103 "Warehouse TB Optimized"
                     CachedSourceName: Text[100];
                     ValuationCacheKey: Text[50];
                     ValuationCostForEndDate: Record "Valuation Cost RCGRBASE";
+                    HasStockAndCost: Boolean;
 
                 begin
+
+                    if HideZeroEndValues then begin
+                        if not HideZeroLocationCache.Get("Location Code", HasStockAndCost) then begin
+                            HasStockAndCost := LocationHasStockAndValuationRecord("Item No.", "Location Code");
+                            HideZeroLocationCache.Add("Location Code", HasStockAndCost);
+                        end;
+                        if not HasStockAndCost then begin
+                            CurrReport.Skip();
+                            exit;
+                        end;
+                    end;
 
                     DisplayInvoicedQuantity := "Invoiced Quantity";
                     DisplayItemLedgerEntryQuantity := "Item Ledger Entry Quantity";
@@ -356,9 +368,9 @@ report 67103 "Warehouse TB Optimized"
                                     Name := CachedSourceName
                                 else
                                     if Customers.Get("Source No.") then begin
-                                    Name := Customers.Name;
-                                    SourceNameCache.Add(SourceNameCacheKey, Name);
-                                end;
+                                        Name := Customers.Name;
+                                        SourceNameCache.Add(SourceNameCacheKey, Name);
+                                    end;
                             end;
                         "Source Type"::Vendor:
                             begin
@@ -367,9 +379,9 @@ report 67103 "Warehouse TB Optimized"
                                     Name := CachedSourceName
                                 else
                                     if Vendors.Get("Source No.") then begin
-                                    Name := Vendors.Name;
-                                    SourceNameCache.Add(SourceNameCacheKey, Name);
-                                end;
+                                        Name := Vendors.Name;
+                                        SourceNameCache.Add(SourceNameCacheKey, Name);
+                                    end;
                             end;
 
 
@@ -377,6 +389,9 @@ report 67103 "Warehouse TB Optimized"
                             Name := '';
 
                     end;
+
+                    EndQuantity := Quantity_from_census + Quantity_from_purch + Quantity_from_cons + Quantity_from_prod + Quantity_from_sale - Quantity_from_self + Quantity_from_other_pos + Quantity_from_other_neg;
+                    EndValue := EndQuantity * ValuationCostPerUnit;
 
                     AddCurrentValueEntryToSummary(ValueEntry);
                     CurrReport.Skip();
@@ -386,7 +401,7 @@ report 67103 "Warehouse TB Optimized"
             dataitem(SummaryBuffer; "Warehouse TB Summary Buffer")
             {
                 UseTemporary = true;
-                DataItemTableView = sorting("Item No.", "Location Code");
+                DataItemTableView = sorting("Item No.", "Location Code", "Source Name");
 
                 column(HasValueEntry; "Has Value Entry") { }
                 column(PostingDate; "Posting Date") { }
@@ -439,6 +454,8 @@ report 67103 "Warehouse TB Optimized"
                 column(costfromGBE; "Cost from GBE") { }
                 column(totalcost; "Total Cost") { }
                 column(ValuationCostPerUnit; "Valuation Cost per Unit") { }
+                column(EndQuantity; "End Quantity") { }
+                column(EndValue; "End Value") { }
 
                 trigger OnPreDataItem()
                 begin
@@ -453,6 +470,7 @@ report 67103 "Warehouse TB Optimized"
                 ItemCounter := 0;
                 Clear(EndDateValuationPeriodCode);
                 Clear(SourceNameCache);
+                Clear(HideZeroLocationCache);
                 HasEndDateValuationPeriod := false;
                 if EndDate <> 0D then
                     HasEndDateValuationPeriod := FindCostingPeriodCode(EndDate, EndDateValuationPeriodCode);
@@ -466,10 +484,15 @@ report 67103 "Warehouse TB Optimized"
                 Clear(EndDateValuationCostCache);
                 SummaryBuffer.Reset();
                 SummaryBuffer.DeleteAll();
-                if CopyStr("No.", 1, 4) = '199-' then
+                Clear(HideZeroLocationCache);
+                if (CopyStr("No.", 1, 3) = '199') and ("Item Category Code" = 'ΠΡΟΙΟΝΤΑ') then
                     CurrReport.Skip()
-                else
-                    ItemCounter := ItemCounter + 1;
+                else begin
+                    if HideZeroEndValues and (not ItemHasStockAndValuationRecord("No.")) then
+                        CurrReport.Skip()
+                    else
+                        ItemCounter := ItemCounter + 1;
+                end;
 
             end;
         }
@@ -508,6 +531,12 @@ report 67103 "Warehouse TB Optimized"
                         Caption = 'Use Valuation Cost Adjustments';
                         ToolTip = 'When enabled, census amounts are recalculated from Valuation Cost RCGRBASE and production cost components are read from valuation cost. Other amount fields continue to come from the Value Entry table.';
 
+                    }
+                    field(HideZeroEndValues; HideZeroEndValues)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Hide Items Without Stock';
+                        ToolTip = 'When enabled, item and location rows without nonzero ending stock or without a valuation-cost record for the ending date are hidden. A valuation-cost record with a zero unit cost is included.';
                     }
                 }
             }
@@ -580,14 +609,19 @@ report 67103 "Warehouse TB Optimized"
         HasEndDateValuationPeriod: Boolean;
         EndDateValuationCostCache: Dictionary of [Text, Decimal];
         SourceNameCache: Dictionary of [Text, Text];
+        HideZeroLocationCache: Dictionary of [Code[10], Boolean];
         UseValuationCostForProduction: Boolean;
+        EndQuantity: Decimal;
+        EndValue: Decimal;
+        HideZeroEndValues: Boolean;
 
     local procedure AddCurrentValueEntryToSummary(var CurrentValueEntry: Record "Value Entry")
     begin
-        if not SummaryBuffer.Get(CurrentValueEntry."Item No.", CurrentValueEntry."Location Code") then begin
+        if not SummaryBuffer.Get(CurrentValueEntry."Item No.", CurrentValueEntry."Location Code", Name) then begin
             SummaryBuffer.Init();
             SummaryBuffer."Item No." := CurrentValueEntry."Item No.";
             SummaryBuffer."Location Code" := CurrentValueEntry."Location Code";
+            SummaryBuffer."Source Name" := Name;
             SummaryBuffer."Posting Date" := CurrentValueEntry."Posting Date";
             SummaryBuffer."Item Ledger Entry Type" := Format(CurrentValueEntry."Item Ledger Entry Type");
             SummaryBuffer."Has Value Entry" := HasValueEntry;
@@ -600,14 +634,13 @@ report 67103 "Warehouse TB Optimized"
             SummaryBuffer."Source Posting Group" := CurrentValueEntry."Source Posting Group";
             SummaryBuffer."Document No." := CurrentValueEntry."Document No.";
             SummaryBuffer."Document Type" := Format(CurrentValueEntry."Document Type");
-            SummaryBuffer."Source Name" := Name;
             SummaryBuffer."Unit of Measure" := UnitOfMeas;
             SummaryBuffer."Reason Code" := CurrentValueEntry."Reason Code";
             SummaryBuffer."Valuation Cost per Unit" := ValuationCostPerUnit;
             SummaryBuffer.Insert();
         end;
 
-        SummaryBuffer.Get(CurrentValueEntry."Item No.", CurrentValueEntry."Location Code");
+        SummaryBuffer.Get(CurrentValueEntry."Item No.", CurrentValueEntry."Location Code", Name);
         SummaryBuffer."Invoiced Quantity" := SummaryBuffer."Invoiced Quantity" + DisplayInvoicedQuantity;
         SummaryBuffer."Item Ledger Entry Quantity" := SummaryBuffer."Item Ledger Entry Quantity" + DisplayItemLedgerEntryQuantity;
         SummaryBuffer."Amount from purch" := SummaryBuffer."Amount from purch" + Amount_from_purch;
@@ -641,6 +674,8 @@ report 67103 "Warehouse TB Optimized"
         SummaryBuffer."Cost from ER" := SummaryBuffer."Cost from ER" + costfromER;
         SummaryBuffer."Cost from GBE" := SummaryBuffer."Cost from GBE" + costfromGBE;
         SummaryBuffer."Total Cost" := SummaryBuffer."Total Cost" + totalcost;
+        SummaryBuffer."End Quantity" := SummaryBuffer."End Quantity" + EndQuantity;
+        SummaryBuffer."End Value" := SummaryBuffer."End Value" + EndValue;
         SummaryBuffer.Modify();
     end;
 
@@ -739,6 +774,79 @@ report 67103 "Warehouse TB Optimized"
         if ValuationCost.FindFirst() then
             exit(true);
 
+        exit(false);
+    end;
+
+    local procedure LocationEndQuantity(ItemNo: Code[20]; LocationCode: Code[10]) Qty: Decimal
+    var
+        TempVE: Record "Value Entry";
+        CensusCutoffDate: Date;
+        MovementStartDate: Date;
+    begin
+        TempVE.ReadIsolation := IsolationLevel::ReadUncommitted;
+        TempVE.SetRange("Item No.", ItemNo);
+        TempVE.SetRange("Location Code", LocationCode);
+        TempVE.SetRange("Posting Date", 0D, EndDate);
+        if StartDate = 0D then begin
+            TempVE.CalcSums("Item Ledger Entry Quantity");
+            exit(TempVE."Item Ledger Entry Quantity");
+        end;
+
+        if Date2DMY(StartDate, 3) = 2025 then
+            CensusCutoffDate := DMY2Date(31, 10, 2025)
+        else
+            CensusCutoffDate := CalcDate('<-1D>', StartDate);
+        if CensusCutoffDate > EndDate then
+            CensusCutoffDate := EndDate;
+
+        TempVE.SetRange("Posting Date", 0D, CensusCutoffDate);
+        TempVE.CalcSums("Item Ledger Entry Quantity");
+        Qty := TempVE."Item Ledger Entry Quantity";
+
+        MovementStartDate := StartDate;
+        if (Date2DMY(StartDate, 3) = 2025) and (StartDate <= CensusCutoffDate) then
+            MovementStartDate := CalcDate('<1D>', CensusCutoffDate);
+        TempVE.SetRange("Posting Date", MovementStartDate, EndDate);
+        TempVE.SetFilter("Item Ledger Entry Type", '<>%1', "Item Ledger Entry Type"::" ");
+        TempVE.CalcSums("Item Ledger Entry Quantity");
+        exit(Qty + TempVE."Item Ledger Entry Quantity");
+    end;
+
+    local procedure LocationHasStockAndValuationRecord(ItemNo: Code[20]; LocationCode: Code[10]): Boolean
+    var
+        ValCost: Record "Valuation Cost RCGRBASE";
+    begin
+        if LocationEndQuantity(ItemNo, LocationCode) = 0 then
+            exit(false);
+        if not HasEndDateValuationPeriod then
+            exit(false);
+        if not FindValuationCostForPeriod(ItemNo, LocationCode, '', EndDateValuationPeriodCode, ValCost) then
+            exit(false);
+        exit(true);
+    end;
+
+    local procedure ItemHasStockAndValuationRecord(ItemNo: Code[20]): Boolean
+    var
+        TempVE: Record "Value Entry";
+        LastLocationCode: Code[10];
+        FirstRow: Boolean;
+    begin
+        TempVE.ReadIsolation := IsolationLevel::ReadUncommitted;
+        TempVE.SetLoadFields("Location Code");
+        TempVE.SetRange("Item No.", ItemNo);
+        TempVE.SetRange("Posting Date", 0D, EndDate);
+        if not TempVE.SetCurrentKey("Item No.", "Location Code") then;
+        if TempVE.FindSet() then begin
+            FirstRow := true;
+            repeat
+                if FirstRow or (TempVE."Location Code" <> LastLocationCode) then begin
+                    if LocationHasStockAndValuationRecord(ItemNo, TempVE."Location Code") then
+                        exit(true);
+                    LastLocationCode := TempVE."Location Code";
+                    FirstRow := false;
+                end;
+            until TempVE.Next() = 0;
+        end;
         exit(false);
     end;
 
