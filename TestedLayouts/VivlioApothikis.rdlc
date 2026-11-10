@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
@@ -10,319 +10,6 @@
       <rd:DataSourceID>09cd5a9f-5a08-40f5-9710-b9376aebc055</rd:DataSourceID>
     </DataSource>
   </DataSources>
-  <DataSets>
-    <DataSet Name="DataSet_Result">
-      <Query>
-        <DataSourceName>DataSource</DataSourceName>
-        <CommandText />
-      </Query>
-      <Fields>
-        <Field Name="Name">
-          <DataField>Name</DataField>
-        </Field>
-        <Field Name="Profession">
-          <DataField>Profession</DataField>
-        </Field>
-        <Field Name="Address">
-          <DataField>Address</DataField>
-        </Field>
-        <Field Name="City">
-          <DataField>City</DataField>
-        </Field>
-        <Field Name="Post_Code">
-          <DataField>Post_Code</DataField>
-        </Field>
-        <Field Name="VAT_Registration_No_">
-          <DataField>VAT_Registration_No_</DataField>
-        </Field>
-        <Field Name="Tax_Office">
-          <DataField>Tax_Office</DataField>
-        </Field>
-        <Field Name="Picture">
-          <DataField>Picture</DataField>
-        </Field>
-        <Field Name="StartDate">
-          <DataField>StartDate</DataField>
-        </Field>
-        <Field Name="EndDate">
-          <DataField>EndDate</DataField>
-        </Field>
-        <Field Name="LocationFilter">
-          <DataField>LocationFilter</DataField>
-        </Field>
-        <Field Name="GlobalDim1Filter">
-          <DataField>GlobalDim1Filter</DataField>
-        </Field>
-        <Field Name="GlobalDim2Filter">
-          <DataField>GlobalDim2Filter</DataField>
-        </Field>
-        <Field Name="No_">
-          <DataField>No_</DataField>
-        </Field>
-        <Field Name="Description">
-          <DataField>Description</DataField>
-        </Field>
-        <Field Name="Inventory_Posting_Group">
-          <DataField>Inventory_Posting_Group</DataField>
-        </Field>
-        <Field Name="Item_Category_Code">
-          <DataField>Item_Category_Code</DataField>
-        </Field>
-        <Field Name="itemAA">
-          <DataField>itemAA</DataField>
-        </Field>
-        <Field Name="HasValueEntry">
-          <DataField>HasValueEntry</DataField>
-        </Field>
-        <Field Name="PostingDate">
-          <DataField>PostingDate</DataField>
-        </Field>
-        <Field Name="ItemLedgerEntryType">
-          <DataField>ItemLedgerEntryType</DataField>
-        </Field>
-        <Field Name="ItemNo">
-          <DataField>ItemNo</DataField>
-        </Field>
-        <Field Name="InvoicedQuantity">
-          <DataField>InvoicedQuantity</DataField>
-        </Field>
-        <Field Name="InvoicedQuantityFormat">
-          <DataField>InvoicedQuantityFormat</DataField>
-        </Field>
-        <Field Name="ItemLedgerEntryQuantity">
-          <DataField>ItemLedgerEntryQuantity</DataField>
-        </Field>
-        <Field Name="ItemLedgerEntryQuantityFormat">
-          <DataField>ItemLedgerEntryQuantityFormat</DataField>
-        </Field>
-        <Field Name="LocationCode">
-          <DataField>LocationCode</DataField>
-        </Field>
-        <Field Name="GlobalDimension1Code">
-          <DataField>GlobalDimension1Code</DataField>
-        </Field>
-        <Field Name="GlobalDimension2Code">
-          <DataField>GlobalDimension2Code</DataField>
-        </Field>
-        <Field Name="GenProdPostingGroup">
-          <DataField>GenProdPostingGroup</DataField>
-        </Field>
-        <Field Name="ExternalDocumentNo">
-          <DataField>ExternalDocumentNo</DataField>
-        </Field>
-        <Field Name="SourceNo">
-          <DataField>SourceNo</DataField>
-        </Field>
-        <Field Name="SourcePostingGroup">
-          <DataField>SourcePostingGroup</DataField>
-        </Field>
-        <Field Name="Amount_from_purch">
-          <DataField>Amount_from_purch</DataField>
-        </Field>
-        <Field Name="Amount_from_purchFormat">
-          <DataField>Amount_from_purchFormat</DataField>
-        </Field>
-        <Field Name="Amount_from_purch_exp">
-          <DataField>Amount_from_purch_exp</DataField>
-        </Field>
-        <Field Name="Amount_from_purch_expFormat">
-          <DataField>Amount_from_purch_expFormat</DataField>
-        </Field>
-        <Field Name="Amount_from_sale">
-          <DataField>Amount_from_sale</DataField>
-        </Field>
-        <Field Name="Amount_from_saleFormat">
-          <DataField>Amount_from_saleFormat</DataField>
-        </Field>
-        <Field Name="Amount_from_sale_exp">
-          <DataField>Amount_from_sale_exp</DataField>
-        </Field>
-        <Field Name="Amount_from_sale_expFormat">
-          <DataField>Amount_from_sale_expFormat</DataField>
-        </Field>
-        <Field Name="Cost_from_sale">
-          <DataField>Cost_from_sale</DataField>
-        </Field>
-        <Field Name="Cost_from_saleFormat">
-          <DataField>Cost_from_saleFormat</DataField>
-        </Field>
-        <Field Name="Cost_from_sale_exp">
-          <DataField>Cost_from_sale_exp</DataField>
-        </Field>
-        <Field Name="Cost_from_sale_expFormat">
-          <DataField>Cost_from_sale_expFormat</DataField>
-        </Field>
-        <Field Name="Amount_from_cons">
-          <DataField>Amount_from_cons</DataField>
-        </Field>
-        <Field Name="Amount_from_consFormat">
-          <DataField>Amount_from_consFormat</DataField>
-        </Field>
-        <Field Name="Amount_from_prod">
-          <DataField>Amount_from_prod</DataField>
-        </Field>
-        <Field Name="Amount_from_prodFormat">
-          <DataField>Amount_from_prodFormat</DataField>
-        </Field>
-        <Field Name="Amount_from_other_neg">
-          <DataField>Amount_from_other_neg</DataField>
-        </Field>
-        <Field Name="Amount_from_other_negFormat">
-          <DataField>Amount_from_other_negFormat</DataField>
-        </Field>
-        <Field Name="Amount_from_other_pos">
-          <DataField>Amount_from_other_pos</DataField>
-        </Field>
-        <Field Name="Amount_from_other_posFormat">
-          <DataField>Amount_from_other_posFormat</DataField>
-        </Field>
-        <Field Name="Quantity_from_purch">
-          <DataField>Quantity_from_purch</DataField>
-        </Field>
-        <Field Name="Quantity_from_purchFormat">
-          <DataField>Quantity_from_purchFormat</DataField>
-        </Field>
-        <Field Name="Quantity_from_purch_exp">
-          <DataField>Quantity_from_purch_exp</DataField>
-        </Field>
-        <Field Name="Quantity_from_purch_expFormat">
-          <DataField>Quantity_from_purch_expFormat</DataField>
-        </Field>
-        <Field Name="Quantity_from_sale">
-          <DataField>Quantity_from_sale</DataField>
-        </Field>
-        <Field Name="Quantity_from_saleFormat">
-          <DataField>Quantity_from_saleFormat</DataField>
-        </Field>
-        <Field Name="Quantity_from_sale_exp">
-          <DataField>Quantity_from_sale_exp</DataField>
-        </Field>
-        <Field Name="Quantity_from_sale_expFormat">
-          <DataField>Quantity_from_sale_expFormat</DataField>
-        </Field>
-        <Field Name="Quantity_from_prod">
-          <DataField>Quantity_from_prod</DataField>
-        </Field>
-        <Field Name="Quantity_from_prodFormat">
-          <DataField>Quantity_from_prodFormat</DataField>
-        </Field>
-        <Field Name="Quantity_from_cons">
-          <DataField>Quantity_from_cons</DataField>
-        </Field>
-        <Field Name="Quantity_from_consFormat">
-          <DataField>Quantity_from_consFormat</DataField>
-        </Field>
-        <Field Name="Quantity_from_census">
-          <DataField>Quantity_from_census</DataField>
-        </Field>
-        <Field Name="Quantity_from_censusFormat">
-          <DataField>Quantity_from_censusFormat</DataField>
-        </Field>
-        <Field Name="Quantity_from_other_pos">
-          <DataField>Quantity_from_other_pos</DataField>
-        </Field>
-        <Field Name="Quantity_from_other_posFormat">
-          <DataField>Quantity_from_other_posFormat</DataField>
-        </Field>
-        <Field Name="Quantity_from_other_neg">
-          <DataField>Quantity_from_other_neg</DataField>
-        </Field>
-        <Field Name="Quantity_from_other_negFormat">
-          <DataField>Quantity_from_other_negFormat</DataField>
-        </Field>
-        <Field Name="countN">
-          <DataField>countN</DataField>
-        </Field>
-        <Field Name="Quantity_from_transfer">
-          <DataField>Quantity_from_transfer</DataField>
-        </Field>
-        <Field Name="Quantity_from_transferFormat">
-          <DataField>Quantity_from_transferFormat</DataField>
-        </Field>
-        <Field Name="Quantity_from_transfer_exp">
-          <DataField>Quantity_from_transfer_exp</DataField>
-        </Field>
-        <Field Name="Quantity_from_transfer_expFormat">
-          <DataField>Quantity_from_transfer_expFormat</DataField>
-        </Field>
-        <Field Name="Amount_from_transfer">
-          <DataField>Amount_from_transfer</DataField>
-        </Field>
-        <Field Name="Amount_from_transferFormat">
-          <DataField>Amount_from_transferFormat</DataField>
-        </Field>
-        <Field Name="Amount_from_census">
-          <DataField>Amount_from_census</DataField>
-        </Field>
-        <Field Name="Amount_from_censusFormat">
-          <DataField>Amount_from_censusFormat</DataField>
-        </Field>
-        <Field Name="Quantity_from_prev_period">
-          <DataField>Quantity_from_prev_period</DataField>
-        </Field>
-        <Field Name="Quantity_from_prev_periodFormat">
-          <DataField>Quantity_from_prev_periodFormat</DataField>
-        </Field>
-        <Field Name="Amount_from_prev_period">
-          <DataField>Amount_from_prev_period</DataField>
-        </Field>
-        <Field Name="Amount_from_prev_periodFormat">
-          <DataField>Amount_from_prev_periodFormat</DataField>
-        </Field>
-        <Field Name="Quantity_from_self">
-          <DataField>Quantity_from_self</DataField>
-        </Field>
-        <Field Name="Quantity_from_selfFormat">
-          <DataField>Quantity_from_selfFormat</DataField>
-        </Field>
-        <Field Name="Amount_from_self">
-          <DataField>Amount_from_self</DataField>
-        </Field>
-        <Field Name="Amount_from_selfFormat">
-          <DataField>Amount_from_selfFormat</DataField>
-        </Field>
-        <Field Name="Document_No_">
-          <DataField>Document_No_</DataField>
-        </Field>
-        <Field Name="Document_Type">
-          <DataField>Document_Type</DataField>
-        </Field>
-        <Field Name="Tm_Name">
-          <DataField>Tm_Name</DataField>
-        </Field>
-        <Field Name="UnitOfMeas">
-          <DataField>UnitOfMeas</DataField>
-        </Field>
-        <Field Name="Reason_Code">
-          <DataField>Reason_Code</DataField>
-        </Field>
-        <Field Name="costfromYL">
-          <DataField>costfromYL</DataField>
-        </Field>
-        <Field Name="costfromYLFormat">
-          <DataField>costfromYLFormat</DataField>
-        </Field>
-        <Field Name="costfromER">
-          <DataField>costfromER</DataField>
-        </Field>
-        <Field Name="costfromERFormat">
-          <DataField>costfromERFormat</DataField>
-        </Field>
-        <Field Name="costfromGBE">
-          <DataField>costfromGBE</DataField>
-        </Field>
-        <Field Name="costfromGBEFormat">
-          <DataField>costfromGBEFormat</DataField>
-        </Field>
-        <Field Name="totalcost">
-          <DataField>totalcost</DataField>
-        </Field>
-        <Field Name="totalcostFormat">
-          <DataField>totalcostFormat</DataField>
-        </Field>
-      </Fields>
-    </DataSet>
-  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -358,10 +45,10 @@
                   <Width>2.5cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.36771cm</Width>
+                  <Width>2.52646cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.5cm</Width>
+                  <Width>2.55292cm</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>2.5cm</Width>
@@ -8297,7 +7984,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=ReportItems!Textbox23.value + ReportItems!Textbox88.value -  ReportItems!Textbox60.value + ReportItems!Textbox63.value - ReportItems!Textbox128.value - ReportItems!Textbox281.value + ReportItems!Textbox196.value - ReportItems!Textbox256.value</Value>
+                                  <Value>=Sum(Fields!EndQuantity.Value, "ItemNo")</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>8pt</FontSize>
@@ -8355,7 +8042,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=ReportItems!Textbox87.value + ReportItems!Textbox59.value -  ReportItems!Textbox48.value + ReportItems!Textbox184.value -ReportItems!Textbox232.value - ReportItems!Textbox208.value</Value>
+                                  <Value>=Sum(Fields!EndValue.Value, "ItemNo")</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>8pt</FontSize>
@@ -9764,7 +9451,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=sum(Fields!Quantity_from_transfer.Value, "Group1") + Sum(Fields!Quantity_from_purch.Value, "Group1")+sum(Fields!Quantity_from_cons.Value, "Group1")+sum(Fields!Quantity_from_prod.Value, "Group1")+sum(Fields!Quantity_from_sale.Value, "Group1")+sum(Fields!Quantity_from_other_pos.Value, "Group1")+sum(Fields!Quantity_from_other_neg.Value, "Group1")</Value>
+                                  <Value>=Sum(Fields!EndQuantity.Value, "Group1")</Value>
                                   <Style>
                                     <FontStyle>Normal</FontStyle>
                                     <FontFamily>Tahoma</FontFamily>
@@ -9805,7 +9492,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=ReportItems!Textbox119.value + ReportItems!Textbox124.value -  ReportItems!Textbox129.value + ReportItems!Textbox131.value -ReportItems!Textbox140.value</Value>
+                                  <Value>=Sum(Fields!EndValue.Value, "Group1")</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>8pt</FontSize>
@@ -9979,7 +9666,7 @@
             <DataSetName>DataSet_Result</DataSetName>
             <Top>4.84132cm</Top>
             <Height>4.59604cm</Height>
-            <Width>95.95853cm</Width>
+            <Width>96.1702cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -10246,12 +9933,6 @@
       </Page>
     </ReportSection>
   </ReportSections>
-  <ReportParametersLayout>
-    <GridLayoutDefinition>
-      <NumberOfColumns>4</NumberOfColumns>
-      <NumberOfRows>2</NumberOfRows>
-    </GridLayoutDefinition>
-  </ReportParametersLayout>
   <Code>Public Function BlankZero(ByVal Value As Decimal)
     if Value = 0 then
         Return ""
@@ -10291,4 +9972,338 @@ End Function
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
   <rd:ReportID>0eeb6585-38ae-40f1-885b-8d50088d51b4</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+        </Field>
+        <Field Name="Profession">
+          <DataField>Profession</DataField>
+        </Field>
+        <Field Name="Address">
+          <DataField>Address</DataField>
+        </Field>
+        <Field Name="City">
+          <DataField>City</DataField>
+        </Field>
+        <Field Name="Post_Code">
+          <DataField>Post_Code</DataField>
+        </Field>
+        <Field Name="VAT_Registration_No_">
+          <DataField>VAT_Registration_No_</DataField>
+        </Field>
+        <Field Name="Tax_Office">
+          <DataField>Tax_Office</DataField>
+        </Field>
+        <Field Name="Picture">
+          <DataField>Picture</DataField>
+        </Field>
+        <Field Name="StartDate">
+          <DataField>StartDate</DataField>
+        </Field>
+        <Field Name="EndDate">
+          <DataField>EndDate</DataField>
+        </Field>
+        <Field Name="LocationFilter">
+          <DataField>LocationFilter</DataField>
+        </Field>
+        <Field Name="GlobalDim1Filter">
+          <DataField>GlobalDim1Filter</DataField>
+        </Field>
+        <Field Name="GlobalDim2Filter">
+          <DataField>GlobalDim2Filter</DataField>
+        </Field>
+        <Field Name="No_">
+          <DataField>No_</DataField>
+        </Field>
+        <Field Name="Description">
+          <DataField>Description</DataField>
+        </Field>
+        <Field Name="Inventory_Posting_Group">
+          <DataField>Inventory_Posting_Group</DataField>
+        </Field>
+        <Field Name="Item_Category_Code">
+          <DataField>Item_Category_Code</DataField>
+        </Field>
+        <Field Name="ESIL_Only_Value">
+          <DataField>ESIL_Only_Value</DataField>
+        </Field>
+        <Field Name="itemAA">
+          <DataField>itemAA</DataField>
+        </Field>
+        <Field Name="HasValueEntry">
+          <DataField>HasValueEntry</DataField>
+        </Field>
+        <Field Name="PostingDate">
+          <DataField>PostingDate</DataField>
+        </Field>
+        <Field Name="ItemLedgerEntryType">
+          <DataField>ItemLedgerEntryType</DataField>
+        </Field>
+        <Field Name="ItemNo">
+          <DataField>ItemNo</DataField>
+        </Field>
+        <Field Name="InvoicedQuantity">
+          <DataField>InvoicedQuantity</DataField>
+        </Field>
+        <Field Name="InvoicedQuantityFormat">
+          <DataField>InvoicedQuantityFormat</DataField>
+        </Field>
+        <Field Name="ItemLedgerEntryQuantity">
+          <DataField>ItemLedgerEntryQuantity</DataField>
+        </Field>
+        <Field Name="ItemLedgerEntryQuantityFormat">
+          <DataField>ItemLedgerEntryQuantityFormat</DataField>
+        </Field>
+        <Field Name="LocationCode">
+          <DataField>LocationCode</DataField>
+        </Field>
+        <Field Name="GlobalDimension1Code">
+          <DataField>GlobalDimension1Code</DataField>
+        </Field>
+        <Field Name="GlobalDimension2Code">
+          <DataField>GlobalDimension2Code</DataField>
+        </Field>
+        <Field Name="GenProdPostingGroup">
+          <DataField>GenProdPostingGroup</DataField>
+        </Field>
+        <Field Name="ExternalDocumentNo">
+          <DataField>ExternalDocumentNo</DataField>
+        </Field>
+        <Field Name="SourceNo">
+          <DataField>SourceNo</DataField>
+        </Field>
+        <Field Name="SourcePostingGroup">
+          <DataField>SourcePostingGroup</DataField>
+        </Field>
+        <Field Name="Amount_from_purch">
+          <DataField>Amount_from_purch</DataField>
+        </Field>
+        <Field Name="Amount_from_purchFormat">
+          <DataField>Amount_from_purchFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_purch_exp">
+          <DataField>Amount_from_purch_exp</DataField>
+        </Field>
+        <Field Name="Amount_from_purch_expFormat">
+          <DataField>Amount_from_purch_expFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_sale">
+          <DataField>Amount_from_sale</DataField>
+        </Field>
+        <Field Name="Amount_from_saleFormat">
+          <DataField>Amount_from_saleFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_sale_exp">
+          <DataField>Amount_from_sale_exp</DataField>
+        </Field>
+        <Field Name="Amount_from_sale_expFormat">
+          <DataField>Amount_from_sale_expFormat</DataField>
+        </Field>
+        <Field Name="Cost_from_sale">
+          <DataField>Cost_from_sale</DataField>
+        </Field>
+        <Field Name="Cost_from_saleFormat">
+          <DataField>Cost_from_saleFormat</DataField>
+        </Field>
+        <Field Name="Cost_from_sale_exp">
+          <DataField>Cost_from_sale_exp</DataField>
+        </Field>
+        <Field Name="Cost_from_sale_expFormat">
+          <DataField>Cost_from_sale_expFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_cons">
+          <DataField>Amount_from_cons</DataField>
+        </Field>
+        <Field Name="Amount_from_consFormat">
+          <DataField>Amount_from_consFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_prod">
+          <DataField>Amount_from_prod</DataField>
+        </Field>
+        <Field Name="Amount_from_prodFormat">
+          <DataField>Amount_from_prodFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_other_neg">
+          <DataField>Amount_from_other_neg</DataField>
+        </Field>
+        <Field Name="Amount_from_other_negFormat">
+          <DataField>Amount_from_other_negFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_other_pos">
+          <DataField>Amount_from_other_pos</DataField>
+        </Field>
+        <Field Name="Amount_from_other_posFormat">
+          <DataField>Amount_from_other_posFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_purch">
+          <DataField>Quantity_from_purch</DataField>
+        </Field>
+        <Field Name="Quantity_from_purchFormat">
+          <DataField>Quantity_from_purchFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_purch_exp">
+          <DataField>Quantity_from_purch_exp</DataField>
+        </Field>
+        <Field Name="Quantity_from_purch_expFormat">
+          <DataField>Quantity_from_purch_expFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_sale">
+          <DataField>Quantity_from_sale</DataField>
+        </Field>
+        <Field Name="Quantity_from_saleFormat">
+          <DataField>Quantity_from_saleFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_sale_exp">
+          <DataField>Quantity_from_sale_exp</DataField>
+        </Field>
+        <Field Name="Quantity_from_sale_expFormat">
+          <DataField>Quantity_from_sale_expFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_prod">
+          <DataField>Quantity_from_prod</DataField>
+        </Field>
+        <Field Name="Quantity_from_prodFormat">
+          <DataField>Quantity_from_prodFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_cons">
+          <DataField>Quantity_from_cons</DataField>
+        </Field>
+        <Field Name="Quantity_from_consFormat">
+          <DataField>Quantity_from_consFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_census">
+          <DataField>Quantity_from_census</DataField>
+        </Field>
+        <Field Name="Quantity_from_censusFormat">
+          <DataField>Quantity_from_censusFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_other_pos">
+          <DataField>Quantity_from_other_pos</DataField>
+        </Field>
+        <Field Name="Quantity_from_other_posFormat">
+          <DataField>Quantity_from_other_posFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_other_neg">
+          <DataField>Quantity_from_other_neg</DataField>
+        </Field>
+        <Field Name="Quantity_from_other_negFormat">
+          <DataField>Quantity_from_other_negFormat</DataField>
+        </Field>
+        <Field Name="countN">
+          <DataField>countN</DataField>
+        </Field>
+        <Field Name="Quantity_from_transfer">
+          <DataField>Quantity_from_transfer</DataField>
+        </Field>
+        <Field Name="Quantity_from_transferFormat">
+          <DataField>Quantity_from_transferFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_transfer_exp">
+          <DataField>Quantity_from_transfer_exp</DataField>
+        </Field>
+        <Field Name="Quantity_from_transfer_expFormat">
+          <DataField>Quantity_from_transfer_expFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_transfer">
+          <DataField>Amount_from_transfer</DataField>
+        </Field>
+        <Field Name="Amount_from_transferFormat">
+          <DataField>Amount_from_transferFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_census">
+          <DataField>Amount_from_census</DataField>
+        </Field>
+        <Field Name="Amount_from_censusFormat">
+          <DataField>Amount_from_censusFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_prev_period">
+          <DataField>Quantity_from_prev_period</DataField>
+        </Field>
+        <Field Name="Quantity_from_prev_periodFormat">
+          <DataField>Quantity_from_prev_periodFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_prev_period">
+          <DataField>Amount_from_prev_period</DataField>
+        </Field>
+        <Field Name="Amount_from_prev_periodFormat">
+          <DataField>Amount_from_prev_periodFormat</DataField>
+        </Field>
+        <Field Name="Quantity_from_self">
+          <DataField>Quantity_from_self</DataField>
+        </Field>
+        <Field Name="Quantity_from_selfFormat">
+          <DataField>Quantity_from_selfFormat</DataField>
+        </Field>
+        <Field Name="Amount_from_self">
+          <DataField>Amount_from_self</DataField>
+        </Field>
+        <Field Name="Amount_from_selfFormat">
+          <DataField>Amount_from_selfFormat</DataField>
+        </Field>
+        <Field Name="Document_No_">
+          <DataField>Document_No_</DataField>
+        </Field>
+        <Field Name="Document_Type">
+          <DataField>Document_Type</DataField>
+        </Field>
+        <Field Name="Tm_Name">
+          <DataField>Tm_Name</DataField>
+        </Field>
+        <Field Name="UnitOfMeas">
+          <DataField>UnitOfMeas</DataField>
+        </Field>
+        <Field Name="Reason_Code">
+          <DataField>Reason_Code</DataField>
+        </Field>
+        <Field Name="costfromYL">
+          <DataField>costfromYL</DataField>
+        </Field>
+        <Field Name="costfromYLFormat">
+          <DataField>costfromYLFormat</DataField>
+        </Field>
+        <Field Name="costfromER">
+          <DataField>costfromER</DataField>
+        </Field>
+        <Field Name="costfromERFormat">
+          <DataField>costfromERFormat</DataField>
+        </Field>
+        <Field Name="costfromGBE">
+          <DataField>costfromGBE</DataField>
+        </Field>
+        <Field Name="costfromGBEFormat">
+          <DataField>costfromGBEFormat</DataField>
+        </Field>
+        <Field Name="totalcost">
+          <DataField>totalcost</DataField>
+        </Field>
+        <Field Name="totalcostFormat">
+          <DataField>totalcostFormat</DataField>
+        </Field>
+        <Field Name="ValuationCostPerUnit">
+          <DataField>ValuationCostPerUnit</DataField>
+        </Field>
+        <Field Name="ValuationCostPerUnitFormat">
+          <DataField>ValuationCostPerUnitFormat</DataField>
+        </Field>
+        <Field Name="EndQuantity">
+          <DataField>EndQuantity</DataField>
+        </Field>
+        <Field Name="EndQuantityFormat">
+          <DataField>EndQuantityFormat</DataField>
+        </Field>
+        <Field Name="EndValue">
+          <DataField>EndValue</DataField>
+        </Field>
+        <Field Name="EndValueFormat">
+          <DataField>EndValueFormat</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
 </Report>
